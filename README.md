@@ -8,8 +8,9 @@
 
 
 #### 安装教程
-
-1.  xxxx
+笔记：
+1.  创建一个虚拟环境，当安装了python2 和 3 两个版本，在使用【mkvirtualenv -p python3 虚拟环境名称 】这条命令不起作用，建议可以直接指向本地的python版本
+【mkvirtualenv -p 解释器路径 虚拟环境名称 】
 2.  xxxx
 3.  xxxx
 
