@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # 'meiduo_mall.app.users',
-    'users',  # 追加导包路径后添加app时简单很多
+    'users',  # 追加导包路径后添加app时简单很多, 此处又有一个坑，先别配置apps,不然会报错manage startapp 不了
 ]
 
 MIDDLEWARE = [
@@ -70,8 +70,9 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'environment': 'meiduo_mall.utils.jinja2_env.jinja2_environment',
         },
-        'environment': 'meiduo_mall.utils.jinja2_env.jinja2_enviroment',
+        # 'environment': 'meiduo_mall.utils.jinja2_env.jinja2_enviroment', # 此处是一个大坑，勿跳！！！！深受其害
     },
 ]
 
