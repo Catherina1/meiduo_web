@@ -61,7 +61,7 @@ TEMPLATES = [
     {
         # 'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'BACKEND': 'django.template.backends.jinja2.Jinja2',  # 将前端模板更改为jinja2模板引擎
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],  # os.path.join(BASE_DIR, 'templates')
+        'DIRS': [os.path.join(BASE_DIR, 'template')],  # os.path.join(BASE_DIR, 'templates')
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
