@@ -98,6 +98,12 @@ DATABASES = {
     },
 }
 
+
+# C:\Users\msi-\Envs\meiduo_web_space\Lib\site-packages\django\conf\global_settings.py
+# 因为django自带用户认证系统，可以从上面路径中找到505行代码AUTH_USER_MODEL = 'auth.User'
+# 因此在设置中自定义路径
+AUTH_USER_MODEL = 'users.User'   # appname and models class name
+
 # 使用redis存储缓存
 CACHES = {
     "default": {  # 默认
