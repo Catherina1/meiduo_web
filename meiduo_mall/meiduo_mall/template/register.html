@@ -68,6 +68,9 @@
 						<li class="reg_sub">
 							<input type="submit" value="注 册">
 						</li>
+                        {% if register_errmsg %}
+                            <span class="error_tip">{{ register_errmsg }}</span>
+                        {% endif %}
 					</ul>
 				</form>
 			</div>
