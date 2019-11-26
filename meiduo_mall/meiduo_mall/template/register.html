@@ -5,7 +5,7 @@
 	<title>美多商城-注册</title>
 	<link rel="stylesheet" type="text/css" href="{{ static('css/reset.css') }}">
 	<link rel="stylesheet" type="text/css" href="{{ static('css/main.css') }}">
-    <script type="text/javascript" src="{{ static('js/vue-2.5.16.js') }}"></script>
+
     <script type="text/javascript" src="{{ static('js/axios-0.18.0.min.js') }}"></script>
 
 </head>
@@ -50,15 +50,13 @@
 						</li>
 						<li>
 							<label>图形验证码:</label>
-{#							<input type="text" name="image_code" v-model="image_code" @blur="check_image_code" id="pic_code" class="msg_input">#}
-                            <input type="text" name="image_code"  id="pic_code" class="msg_input">
+							<input type="text" name="image_code" v-model="image_code" @blur="check_image_code" id="pic_code" class="msg_input">
 							<img src="../static/images/pic_code.jpg" alt="图形验证码" class="pic_code">
 							<span class="error_tip" >请填写图形验证码</span>
 						</li>
 						<li>
 							<label>短信验证码:</label>
-{#							<input type="text" name="sms_code" v-model="sms_code" @blur="check_sms_code" id="msg_code" class="msg_input">#}
-                            <input type="text" name="sms_code" id="msg_code" class="msg_input">
+							<input type="text" name="sms_code" v-model="sms_code" @blur="check_sms_code" id="msg_code" class="msg_input">
 							<a href="javascript:;" class="get_msg_code">获取短信验证码</a>
 							<span class="error_tip" >请填写短信验证码</span>
 						</li>
@@ -91,5 +89,7 @@
     </body>
 </div>
 {#基础问题：先解析上面的html 没发现在js中定义的一些变量，所以需要把js放在后面以获取到前面定义和绑定的变量#}
-<script type="text/javascript" src="{{ static('js/register_my.js') }}"></script>
+<script type="text/javascript" src="{{ static('js/vue-2.5.16.js') }}"></script>
+<script type="text/javascript" src="{{ static('js/register.js') }}"></script>
+
 </html>
