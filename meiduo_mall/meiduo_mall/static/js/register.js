@@ -58,8 +58,10 @@ let vm = new Vue({
         },
         check_allow(){
           if(!this.allow){
+              alert(this.allow)
               this.error_allow = false;
           }else {
+              this.allow
               this.error_allow = true;
           }
         },
