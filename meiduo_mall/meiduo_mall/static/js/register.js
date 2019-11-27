@@ -12,6 +12,8 @@ let vm = new Vue({
         allow:'',
         image_code:'',
         sms_code:'',
+        uuid:'',
+        image_code_url: '',
 
       //  v-show
         error_username: false,
@@ -27,7 +29,14 @@ let vm = new Vue({
         error_mobile_message:'',
 
     },
+    mounted(){
+        this.image_generate();
+    },
     methods:{
+        image_generate(){
+           this.uuid = generateUUID();
+           this.image_code_url = "/image_codes/" + this.uuid + "/";
+        },
         //blur光标触发的时候，会执行以下方法
         check_username(){
             //前端js自己检验用户格式是否正确

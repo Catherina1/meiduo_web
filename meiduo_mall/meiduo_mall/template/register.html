@@ -51,7 +51,7 @@
 						<li>
 							<label>图形验证码:</label>
 							<input type="text" name="image_code" v-model="image_code" @blur="check_image_code" id="pic_code" class="msg_input">
-							<img src="../static/images/pic_code.jpg" alt="图形验证码" class="pic_code">
+							<img :src="image_code_url" alt="图形验证码" class="pic_code" @click="image_generate">
 							<span class="error_tip" >请填写图形验证码</span>
 						</li>
 						<li>
@@ -93,6 +93,7 @@
 </div>
 {#基础问题：先解析上面的html 没发现在js中定义的一些变量，所以需要把js放在后面以获取到前面定义和绑定的变量#}
 <script type="text/javascript" src="{{ static('js/vue-2.5.16.js') }}"></script>
+<script type="text/javascript" src="{{ static('js/common.js') }}"></script>
 <script type="text/javascript" src="{{ static('js/register.js') }}"></script>
 
 </html>
