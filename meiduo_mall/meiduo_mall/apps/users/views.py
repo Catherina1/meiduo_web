@@ -1,4 +1,5 @@
 from django import http
+from django.contrib.auth import login
 from django.db import DatabaseError
 from django.shortcuts import render,redirect
 from django.urls import reverse
@@ -50,10 +51,17 @@ class Register(View):
 
         try:
             # 因为使用的是django自带的用户认证系统所以不能重复
-            User.objects.create_user(username=username,password=password,mobile=mobile)
+            user = User.objects.create_user(username=username,password=password,mobile=mobile)
         except DatabaseError:
             # 不能漏写request,报错不会提醒少了个参数，只会报哈希表的错，可以使用debug找到出错点
             return render(request, 'register.html', {'register_errmsg': '注册失败'})
+
+        # 登入用户实现状态保持
+        # Django用户认证系统提供了login()
+        # 方法。
+        # 封装了写入session的操作，帮助我们快速登入一个用户，并实现状态保持。
+        login(request,user)
+
         # return render(request, 'register.html', {'register_errmsg': '注册成功'})
         return redirect(reverse('contents:index'))  # 重定向转到首页
 
