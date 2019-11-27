@@ -1,6 +1,7 @@
 from django import http
 from django.db import DatabaseError
-from django.shortcuts import render
+from django.shortcuts import render,redirect
+from django.urls import reverse
 from django.views import View
 from users.models import User
 import re
@@ -53,7 +54,8 @@ class Register(View):
         except DatabaseError:
             # 不能漏写request,报错不会提醒少了个参数，只会报哈希表的错，可以使用debug找到出错点
             return render(request, 'register.html', {'register_errmsg': '注册失败'})
-        return render(request, 'register.html', {'register_errmsg': '注册成功'})
+        # return render(request, 'register.html', {'register_errmsg': '注册成功'})
+        return redirect(reverse('contents:index'))  # 重定向转到首页
 
 
 
