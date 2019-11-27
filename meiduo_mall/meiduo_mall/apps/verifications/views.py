@@ -19,6 +19,6 @@ class ImageCodeView(View):
 
         # 保存图片和验证码
         redis_conn = get_redis_connection('verify_code')
-        # 写入到redis中，第二个参数存入的是图形信息过期时间
+        # 写入到redis中，第二个参数存入的是图形信息过期时间（不需要存图片）
         redis_conn.setex('img_%s'%uuid, constants.IMAGE_CODE_REDIS_EXPIRES, text)
         return http.HttpResponse(image, content_type='image/jpg')

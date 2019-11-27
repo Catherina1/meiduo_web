@@ -23,10 +23,12 @@ let vm = new Vue({
         error_allow: false,
         error_image_code: false,
         error_sms_code:false,
+        error_image_code:false,
 
       // vue变量[[]]使用
         error_username_message:'',
         error_mobile_message:'',
+        error_image_code_message:'',
 
     },
     mounted(){
@@ -115,7 +117,12 @@ let vm = new Vue({
 
         },
         check_image_code(){
-
+            if(this.image_code.length != 4){
+                this.error_image_code_message = '请填写验证码哦';
+                this.error_image_code = true;
+            }else {
+                this.error_image_code = false;
+            }
         },
         on_submit(){
             check_username();

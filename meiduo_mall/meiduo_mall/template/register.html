@@ -52,7 +52,7 @@
 							<label>图形验证码:</label>
 							<input type="text" name="image_code" v-model="image_code" @blur="check_image_code" id="pic_code" class="msg_input">
 							<img :src="image_code_url" alt="图形验证码" class="pic_code" @click="image_generate">
-							<span class="error_tip" >请填写图形验证码</span>
+							<span class="error_tip" v-show="error_image_code">[[ error_image_code_message ]]</span>
 						</li>
 						<li>
 							<label>短信验证码:</label>
