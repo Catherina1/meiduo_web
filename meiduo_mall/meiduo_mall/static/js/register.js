@@ -22,15 +22,38 @@ let vm = new Vue({
         error_image_code: false,
         error_sms_code:false,
 
+      // vue变量[[]]使用
+        error_username_message:'',
+        error_mobile_message:'',
+
     },
     methods:{
         //blur光标触发的时候，会执行以下方法
         check_username(){
+            //前端js自己检验用户格式是否正确
             let re = /^[a-zA-Z0-9_-]{5,20}$/;
             if(re.test(this.username)){
                 this.error_username = false;
             }else{
+                this.error_username_message = '用户名格式不对';
                 this.error_username = true;
+            }
+            //使用axios.js来实现与数据库连接判断用户是否存在
+            if (this.error_username == false){
+                let url = '/username/' + this.username + '/count/';
+                axios.get(url,{responseType:'json'})
+                    .then(response=>{
+                        //从后端访问返回到的response.data,判断用户名是否重复
+                        if (response.data.count == 1){
+                            this.error_username_message = '用户名已存在哦';
+                            this.error_username = true;
+                        }else {
+                            this.error_username = false;
+                        }
+                    })
+                    .catch(error=>{
+                        console.log(error.response);
+                    })
             }
         },
         check_password(){
@@ -53,15 +76,29 @@ let vm = new Vue({
             if(re.test(this.mobile)){
                 this.error_mobile = false;
             }else {
+                this.error_mobile_message  = '手机号没输对';
                 this.error_mobile = true;
+            }
+            if(this.error_mobile == false){
+                let url = '/mobile/' + this.mobile + '/count/';
+                axios.get(url,{responseType:'json'})
+                    .then(response=>{
+                        if(response.data.count == 1) {
+                            this.error_mobile_message = '手机号已存在';
+                            this.error_mobile = true;
+                        }else {
+                            this.error_mobile = false;
+                        }
+                    })
+                    .catch(error=>{
+                        console.log(error.response)
+                    })
             }
         },
         check_allow(){
           if(!this.allow){
-              alert(this.allow)
               this.error_allow = false;
           }else {
-              this.allow
               this.error_allow = true;
           }
         },

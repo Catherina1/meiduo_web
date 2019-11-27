@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.views import View
 from users.models import User
 import re
+from meiduo_mall.utils.response_code import RETCODE
 # Create your views here.
 
 # 这里使用了类视图写法，另一种方法视图实现可以实现相同效果
@@ -18,6 +19,9 @@ import re
 
 
 # 这里使用了类视图写法,一些处理都被类视图封装起来了
+
+
+
 class Register(View):
     def get(self, request):
         return render(request, 'register.html')
@@ -64,6 +68,29 @@ class Register(View):
 
         # return render(request, 'register.html', {'register_errmsg': '注册成功'})
         return redirect(reverse('contents:index'))  # 重定向转到首页
+
+
+class UsernameCountView(View):
+    def get(self, request , username):
+        """
+        :param request:
+        :param username:
+        :return:
+        """
+        # 使用django自带的用户认证系统给的统计功能
+        count = User.objects.filter(username=username).count()
+        return http.JsonResponse({'code': RETCODE.OK, 'errmsg': 'OK', 'count': count})
+
+
+class MobileCountView(View):
+    def get(self,request,mobile):
+        """
+        :param request:
+        :param mobile:
+        :return:
+        """
+        count = User.objects.filter(mobile=mobile).count()
+        return http.JsonResponse({'code': RETCODE.OK, 'errmsg': 'OK', 'count':count})
 
 
 
