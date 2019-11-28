@@ -14,6 +14,7 @@ let vm = new Vue({
         sms_code:'',
         uuid:'',
         image_code_url: '',
+        send_flag: false, // 类比上厕所，send_flag就是锁，false表示门开，true表示门关
 
       //  v-show
         error_username: false,
@@ -23,12 +24,13 @@ let vm = new Vue({
         error_allow: false,
         error_image_code: false,
         error_sms_code:false,
-        error_image_code:false,
+
 
       // vue变量[[]]使用
         error_username_message:'',
         error_mobile_message:'',
         error_image_code_message:'',
+        error_sms_code_message:'',
 
     },
     mounted(){
@@ -38,6 +40,56 @@ let vm = new Vue({
         image_generate(){
            this.uuid = generateUUID();
            this.image_code_url = "/image_codes/" + this.uuid + "/";
+        },
+        send_sms_code(){
+            //为了避免重复点击发送短信
+            if(this.send_flag == true){
+                return;
+            }
+            this.send_flag = true;
+
+            //检查图片校验码
+            this.check_image_code();
+            if(this.error_image_code == true || this.error_mobile == true){
+                this.send_flag == false;
+                return;
+            }
+
+            // 验证图形验证码后才能请求短信验证码
+            let url = '/sms_codes/' +this.mobile + '/?image_code=' + this.image_code+'&uuid='+ this.uuid;
+            axios.get(url,{responseType:'jason'})
+                .then(response=>{
+                    if(response.data.code == '0'){
+                        let num = 60;
+                        let t = setInterval(()=>{
+                            if(num==1){
+                                clearInterval(t);
+                                this.error_sms_code_message='获取短信验证码';
+                                this.send_flag= false;
+                            }else {
+                                num -=1;
+                                this.error_sms_code_message = num + "s";
+                            }
+                        },1000,60);
+
+                    }else {
+                        if(response.data.code == '4001'){
+                            this.error_sms_code_message = response.data.errmsg;
+                            this.error_sms_code = true;
+                        }else {
+                            this.error_sms_code_message = response.data.errmsg;
+                            this.error_sms_code = true;
+                        }
+                    }
+                    this.image_generate();
+                    this.sending_flag = false;
+                })
+                .catch(error => {
+                    console.log(error.response);
+                    this.sending_flag = false;
+        })
+
+
         },
         //blur光标触发的时候，会执行以下方法
         check_username(){
@@ -113,15 +165,21 @@ let vm = new Vue({
               this.error_allow = true;
           }
         },
-        check_sms_code(){
 
-        },
         check_image_code(){
             if(this.image_code.length != 4){
                 this.error_image_code_message = '请填写验证码哦';
                 this.error_image_code = true;
             }else {
                 this.error_image_code = false;
+            }
+        },
+        check_sms_code(){
+            if (this.sms_code.length != 6 ){
+                this.error_sms_code_message = '请填写短信验证码';
+                this.error_sms_code = true;
+            }else {
+                this.error_sms_code = false;
             }
         },
         on_submit(){
