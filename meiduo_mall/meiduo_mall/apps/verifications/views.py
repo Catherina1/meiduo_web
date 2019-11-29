@@ -33,30 +33,45 @@ class SMSCodeView(View):
         # 获取参数
         image_code_client = request.GET.get('image_code')
         uuid_client = request.GET.get('uuid')
+
         # 判断参数是否完整
         if not all([image_code_client, uuid_client]):
             return http.HttpResponseForbidden('缺少必要参数')
+
         # 连接到redis
         redis_conn = get_redis_connection('verify_code')
+
         # 从redis_conn中拿到图片验证码
         image_code_server = redis_conn.get('img_%s' % uuid_client)
+
         # 判断一下图形验证码是否存在，前面生成有设置验证码存活时间
         if image_code_server is None:
             return http.JsonResponse({'code': RETCODE.IMAGECODEERR, 'errmsg': '图形验证码已失效'})
+
         # 删除图形验证码，如果存在则已经放入变量中，若是不存在则上面判断返回
         redis_conn.delete('img_%s' % uuid_client)
+
         # 前后端图形验证码比对,转码后使用小写比对
         image_code_server = image_code_server.decode()
         if image_code_server.lower() != image_code_client.lower():
             return http.JsonResponse({'code': RETCODE.IMAGECODEERR, 'errmsg': '输入图形验证码有误'})
 
+        # 生成验证码前加入一个验证
+        send_flag = redis_conn.get('send_flag_%s'%mobile)
+        if send_flag:
+            return http.JsonResponse({'code': RETCODE.THROTTLINGERR, 'errmsg': '发送短信过于频繁'})
+
         # 随机生成短信验证码
         sms_code = '%06d'%randint(0, 999999)
+
         # 创建一个日志展示一下生成的验证码
         logger = logging.getLogger('django')
         logger.info("sms_code:%s"%sms_code)
+
         # 保存短信验证码
         redis_conn.setex('sms_%s' % mobile, constants.SMS_CODE_REDIS_EXPIRES, sms_code)
+        redis_conn.setex('send_flag_%s' % mobile, constants.SMS_CODE_REDIS_EXPIRES, 1)
+
         # 发送短信验证码
         CCP().send_template_sms(mobile, [sms_code, constants.SMS_CODE_REDIS_EXPIRES // 60],
                                 constants.SEND_SMS_TEMPLATE_ID)

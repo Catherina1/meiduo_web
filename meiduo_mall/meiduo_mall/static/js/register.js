@@ -14,7 +14,7 @@ let vm = new Vue({
         sms_code:'',
         uuid:'',
         image_code_url: '',
-        send_flag: false, // 类比上厕所，send_flag就是锁，false表示门开，true表示门关
+        send_flag: false, // 用来判断频繁发送短信
 
       //  v-show
         error_username: false,
