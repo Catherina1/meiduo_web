@@ -68,9 +68,18 @@ class SMSCodeView(View):
         logger = logging.getLogger('django')
         logger.info("sms_code:%s"%sms_code)
 
-        # 保存短信验证码
-        redis_conn.setex('sms_%s' % mobile, constants.SMS_CODE_REDIS_EXPIRES, sms_code)
-        redis_conn.setex('send_flag_%s' % mobile, constants.SMS_CODE_REDIS_EXPIRES, 1)
+        # -----改善前 # 保存短信验证码
+        # redis_conn.setex('sms_%s' % mobile, constants.SMS_CODE_REDIS_EXPIRES, sms_code)
+        # redis_conn.setex('send_flag_%s' % mobile, constants.SMS_CODE_REDIS_EXPIRES, 1)
+        # -----改善后
+        # redis服务要处理很多单个请求，防止网络迟缓，加大利用提高使用效率，可以使用pipline()管道发送
+        # 创建redis管道
+        pipeline_redis = redis_conn.pipeline()
+        # 将redis请求加入队列，组成一队
+        pipeline_redis.setex('sms_%s' % mobile, constants.SMS_CODE_REDIS_EXPIRES, sms_code)
+        pipeline_redis.setex('send_flag_%s' % mobile, constants.SMS_CODE_REDIS_EXPIRES, 1)
+        # 执行请求,将保存短信验证码
+        pipeline_redis.execute()
 
         # 发送短信验证码
         CCP().send_template_sms(mobile, [sms_code, constants.SMS_CODE_REDIS_EXPIRES // 60],
