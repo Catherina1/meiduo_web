@@ -56,7 +56,10 @@ class LoginView(View):
             request.session.set_expiry(None)
 
         # 返回数据
-        return redirect(reverse('contents:index'))
+        response = redirect(reverse('contents:index'))  # 重定向转到首页
+        response.set_cookie('username', user.username, max_age=3600 * 24 * 15)
+        # return render(request, 'register.html', {'register_errmsg': '注册成功'})
+        return response  # 重定向转到首页
 
 
 class Register(View):
@@ -111,9 +114,10 @@ class Register(View):
         # Django用户认证系统提供了login()方法。
         # 封装了写入session的操作，帮助我们快速登入一个用户，并实现状态保持。
         login(request,user)
-
+        response = redirect(reverse('contents:index'))  # 重定向转到首页
+        response.set_cookie('username', user.username, max_age=3600 * 24 * 15)
         # return render(request, 'register.html', {'register_errmsg': '注册成功'})
-        return redirect(reverse('contents:index'))  # 重定向转到首页
+        return response  # 重定向转到首页
 
 
 class UsernameCountView(View):
