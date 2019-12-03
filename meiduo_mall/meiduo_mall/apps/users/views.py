@@ -53,7 +53,7 @@ class LoginView(View):
             request.session.set_expiry(0)
         else:
             # 默认None是两周后自动删除
-            remembered.session.set_expiry(None)
+            request.session.set_expiry(None)
 
         # 返回数据
         return redirect(reverse('contents:index'))
