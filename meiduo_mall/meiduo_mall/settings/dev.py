@@ -104,6 +104,9 @@ DATABASES = {
 # 因此在设置中自定义路径
 AUTH_USER_MODEL = 'users.User'   # appname and models class name
 
+# 指定自定义的用户认证后端
+AUTHENTICATION_BACKENDS = ['users.utils.UserNameModelBackend']
+
 # 使用redis存储缓存
 CACHES = {
     "default": {  # 默认

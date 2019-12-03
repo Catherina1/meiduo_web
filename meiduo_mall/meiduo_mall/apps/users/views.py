@@ -5,7 +5,7 @@ from django.shortcuts import render,redirect
 from django.urls import reverse
 from django.views import View
 from django_redis import get_redis_connection
-from users.models import User
+from .models import User
 import re
 from meiduo_mall.utils.response_code import RETCODE
 # Create your views here.
@@ -40,9 +40,12 @@ class LoginView(View):
             return http.HttpResponseForbidden('请输入正确的用户名或手机号')
 
         # 认证数据,判断是否存在数据库里面
+        # 多用户账号登录,我们再django.contrib.auth.backends 中的authenticate进行了自定义
+        # 将自定义的代码放在了utils.py里,并再配置中将默认用户认证指向当前自定义的文件中
         user = authenticate(username=username, password=password)
         if user is None:
             return render(request, 'login.html', {'account_errmsg': '用户名或密码错误'})
+
         # 状态保持
         login(request, user)
         # 状态保持时间
