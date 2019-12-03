@@ -1,5 +1,5 @@
 from django import http
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, logout
 from django.db import DatabaseError
 from django.shortcuts import render,redirect
 from django.urls import reverse
@@ -20,6 +20,13 @@ from meiduo_mall.utils.response_code import RETCODE
 
 
 # 这里使用了类视图写法,一些处理都被类视图封装起来了
+class LogoutView(View):
+    def get(self, request):
+        logout(request)
+        response = redirect(reverse('contents:index'))
+        response.delete_cookie('username')
+        return response
+
 
 class LoginView(View):
     def get(self, request):
