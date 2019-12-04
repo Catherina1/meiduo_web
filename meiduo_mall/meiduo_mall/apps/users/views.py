@@ -20,6 +20,17 @@ from meiduo_mall.utils.response_code import RETCODE
 
 
 # 这里使用了类视图写法,一些处理都被类视图封装起来了
+# 用户中心,判断用户是否登录
+class UserInfoView(View):
+    def get(self, request):
+        # 判断用户是否登录,django自定义的一个方法
+        if request.user.is_authenticated():
+            return render(request, 'user_center_info')
+        else:
+            return redirect(reverse('users:login'))
+
+
+# 用户退出登录
 class LogoutView(View):
     def get(self, request):
         logout(request)
@@ -28,6 +39,7 @@ class LogoutView(View):
         return response
 
 
+# 用户登录界面功能
 class LoginView(View):
     def get(self, request):
         return render(request, 'login.html')
@@ -69,6 +81,7 @@ class LoginView(View):
         return response  # 重定向转到首页
 
 
+# 用户注册功能
 class Register(View):
     def get(self, request):
         return render(request, 'register.html')
@@ -127,6 +140,7 @@ class Register(View):
         return response  # 重定向转到首页
 
 
+# 使用vue的axios来发送请求,实现判断是否已注册过此用户
 class UsernameCountView(View):
     def get(self, request, username):
         """
@@ -139,8 +153,9 @@ class UsernameCountView(View):
         return http.JsonResponse({'code': RETCODE.OK, 'errmsg': 'OK', 'count': count})
 
 
+# 使用vue的axios来发送请求,实现判断是否已注册过此号码
 class MobileCountView(View):
-    def get(self,request,mobile):
+    def get(self, request, mobile):
         """
         :param request:
         :param mobile:
