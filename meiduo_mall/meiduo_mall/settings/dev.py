@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # 'meiduo_mall.app.users',
     'users',  # 追加导包路径后添加app时简单很多, 此处又有一个坑，先别配置apps,不然会报错manage startapp 不了
+    'oauth',
 ]
 
 MIDDLEWARE = [
@@ -213,3 +214,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+
+# 表示当用户未通过登录验证时，将用户重定向到登录页面
+LOGIN_URL = '/login/'

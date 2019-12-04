@@ -1,5 +1,6 @@
-from .yuntongxun.ccp_sms import CCP
 from celery_task.main import celery_app
+from .yuntongxun.ccp_sms import CCP
+
 
 # bind：保证task对象会作为第一个参数自动传入
 # name：异步任务别名

@@ -1,13 +1,14 @@
 import logging
 from random import randint
-from django.shortcuts import render
+
 from django import http
 from django.views import View
 from django_redis import get_redis_connection
-from meiduo_mall.apps.verifications.libs.captcha.captcha import captcha
 from meiduo_mall.apps.verifications import constants
+from meiduo_mall.apps.verifications.libs.captcha.captcha import captcha
 # Create your views here.
 from meiduo_mall.utils.response_code import RETCODE
+
 # from meiduo_mall.apps.verifications.libs.yuntongxun.ccp_sms import CCP
 from celery_task.sms.tasks import ccp_send_sms_code
 

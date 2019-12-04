@@ -1,5 +1,6 @@
 from django import http
 from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import DatabaseError
 from django.shortcuts import render,redirect
 from django.urls import reverse
@@ -8,6 +9,7 @@ from django_redis import get_redis_connection
 from .models import User
 import re
 from meiduo_mall.utils.response_code import RETCODE
+from django.contrib.auth.decorators import login_required
 # Create your views here.
 
 # 这里使用了类视图写法，另一种方法视图实现可以实现相同效果
@@ -21,13 +23,15 @@ from meiduo_mall.utils.response_code import RETCODE
 
 # 这里使用了类视图写法,一些处理都被类视图封装起来了
 # 用户中心,判断用户是否登录
-class UserInfoView(View):
+class UserInfoView(LoginRequiredMixin, View):
+    """使用LoginRequiredMixin可以直接判断是否登录,如果没有登录会再地址中加如next"""
     def get(self, request):
-        # 判断用户是否登录,django自定义的一个方法
-        if request.user.is_authenticated():
-            return render(request, 'user_center_info')
-        else:
-            return redirect(reverse('users:login'))
+        # # 判断用户是否登录,django自定义的一个方法
+        # if request.user.is_authenticated():
+        #     return render(request, 'user_center_info')
+        # else:
+        #     return redirect(reverse('users:login'))
+        return render(request, 'user_center_info.html')
 
 
 # 用户退出登录
@@ -73,12 +77,17 @@ class LoginView(View):
         else:
             # 默认None是两周后自动删除
             request.session.set_expiry(None)
-
-        # 返回数据
-        response = redirect(reverse('contents:index'))  # 重定向转到首页
+        next = request.GET.get('next')
+        if next:
+            response = redirect(next)
+        else:
+            # 返回数据
+            response = redirect(reverse('contents:index'))  # 重定向转到首页
         response.set_cookie('username', user.username, max_age=3600 * 24 * 15)
         # return render(request, 'register.html', {'register_errmsg': '注册成功'})
         return response  # 重定向转到首页
+
+
 
 
 # 用户注册功能
