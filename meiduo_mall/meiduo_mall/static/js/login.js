@@ -47,6 +47,10 @@ let vm = new Vue({
                 responseType: 'json'
             })
                 .then(response => {
+                    //location.href经常用于页面跳转
+                    //self.location.href="/url" 当前页面打开URL页面;
+                    // this.location.href="/url" 当前页面打开URL页面;
+                    // parent.location.href="/url" 在父页面打开新页面;
                     location.href = response.data.login_url;
                 })
                 .catch(error => {

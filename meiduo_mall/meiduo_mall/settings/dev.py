@@ -28,8 +28,8 @@ SECRET_KEY = '90@%+1lk&mvn#2v1v5_46vz(3#cq5jy&1i$2qvk6=47)rkm6a%'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
-ALLOWED_HOSTS = []
+# 在本机更改一下hosts文件,因为在qq注册应用的时候使用的是'www.meiduo.site'域名,需要在本地迁就一下
+ALLOWED_HOSTS = ['127.0.0.1', 'www.meiduo.site']
 
 
 # Application definition
@@ -217,3 +217,7 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 # 表示当用户未通过登录验证时，将用户重定向到登录页面
 LOGIN_URL = '/login/'
+
+QQ_CLIENT_ID = '101518219'
+QQ_CLIENT_SECRET = '418d84ebdc7241efb79536886ae95224'
+QQ_REDIRECT_URI = 'http://www.meiduo.site:8000/oauth_callback'
