@@ -38,7 +38,7 @@ class QQAuthUserView(View):
         # 1.提取code
         code = request.GET.get('code')
         if code is None:
-            return http.HttpResponseForbidden('缺少code')
+            return http.HttpResponseForbidden('回调地址缺少code')
 
         # 2.获取openid
         # 创建工具对象来获取access_token 和 openid
@@ -61,8 +61,8 @@ class QQAuthUserView(View):
         except OAuthQQUser.DoesNotExist:
             # 3.1 没有找到相应openid的相关用户,则返回注册页面注册新用户
             # 使用加密将openid放到前端界面
-            access_token = generate_access_token(open_id)
-            context = {'access_token': access_token}
+            access_token_openid = generate_access_token(open_id)
+            context = {'access_token_openid': access_token_openid}
             # 返回回调注册页面
             return render(request, 'oauth_callback.html', context)
 
@@ -72,10 +72,17 @@ class QQAuthUserView(View):
             # 状态保持
             login(request, qq_user)
             # 重定向
-            response = redirect(reverse('contents:index'))
+            # 从哪来走哪去
+            state = request.GET.get('state')
+            response = redirect(state)
             # 设置cookie
             response.set_cookie('username', qq_user.username, max_age=3600 * 24 * 15)
             return response
+
+    def post(self, request):
+        """绑定用户openid信息"""
+        pass
+
 
 
 
