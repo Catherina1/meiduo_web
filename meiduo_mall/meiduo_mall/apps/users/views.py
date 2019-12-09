@@ -31,7 +31,14 @@ class UserInfoView(LoginRequiredMixin, View):
         #     return render(request, 'user_center_info')
         # else:
         #     return redirect(reverse('users:login'))
-        return render(request, 'user_center_info.html')
+        context = {
+            'username': request.user.username,
+            'mobile': request.user.mobile,
+            'email': request.user.email,
+            'email_active': request.user.email_active,
+        }
+
+        return render(request, 'user_center_info.html', context)
 
 
 # 用户退出登录
@@ -86,8 +93,6 @@ class LoginView(View):
         response.set_cookie('username', user.username, max_age=3600 * 24 * 15)
         # return render(request, 'register.html', {'register_errmsg': '注册成功'})
         return response  # 重定向转到首页
-
-
 
 
 # 用户注册功能
