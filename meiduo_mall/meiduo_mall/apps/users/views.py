@@ -22,6 +22,13 @@ from django.contrib.auth.decorators import login_required
 
 
 # 这里使用了类视图写法,一些处理都被类视图封装起来了
+
+class EmailView(View):
+    """保存和绑定邮箱"""
+    def put(self,request):
+        pass
+
+
 # 用户中心,判断用户是否登录
 class UserInfoView(LoginRequiredMixin, View):
     """使用LoginRequiredMixin可以直接判断是否登录,如果没有登录会再地址中加如next"""

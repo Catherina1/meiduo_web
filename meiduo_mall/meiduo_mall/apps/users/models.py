@@ -6,6 +6,8 @@ from django.contrib.auth.models import AbstractUser
 class User(AbstractUser):
     # unique=True 不能重复电话号码
     mobile = models.CharField(max_length=11, unique=True, verbose_name='手机号')
+    # 添加邮箱是否激活的标志
+    email_active = models.BooleanField(default=False, verbose_name='邮箱验证状态')
 
     class Meta(AbstractUser.Meta):
         db_table = 'tb_users'
