@@ -6,10 +6,15 @@ from django.shortcuts import render,redirect
 from django.urls import reverse
 from django.views import View
 from django_redis import get_redis_connection
+from meiduo_mall.meiduo_mall.utils import views
 from .models import User
 import re
 from meiduo_mall.utils.response_code import RETCODE
-from django.contrib.auth.decorators import login_required
+import json
+import logging
+
+
+logger = logging.getLogger('django')
 # Create your views here.
 
 # 这里使用了类视图写法，另一种方法视图实现可以实现相同效果
@@ -23,10 +28,37 @@ from django.contrib.auth.decorators import login_required
 
 # 这里使用了类视图写法,一些处理都被类视图封装起来了
 
-class EmailView(View):
+class EmailView(views.LoginRequiredJSONMixin, View):
     """保存和绑定邮箱"""
-    def put(self,request):
-        pass
+    def put(self, request):
+        # # 版本一，判断用户是否登录并返回JSON
+        # if not request.user.is_authenticated():
+        #     return http.JsonResponse({'code': RETCODE.SESSIONERR, 'errmsg': '用户未登录'})
+
+        # 1.获取数据
+            # post和put方法将信息包请求体中，put方法是需要从请求体的body中拿出
+            # 了解http协议的规范
+            # email = request.body  # b'{"email":"723102747@qq.com"}'
+        json_dict = json.loads(request.body.decode())
+        email = json_dict.get('email')
+
+        # 2.校验邮箱数据
+        if not email:
+            return http.HttpResponseForbidden('缺少email参数')
+        if not re.match(r'^[a-z0-9][\w\.\-]*@[a-z0-9\-]+(\.[a-z]{2,5}){1,2}$', email):
+            return http.HttpResponseForbidden('参数email有误')
+
+        # 3.保存数据
+            # 保存数据也可以使用User.objects.create,但是这个更方便
+        try:
+            request.user.email = email
+            request.user.save()
+        except Exception as e:
+            logger.error()
+            return http.JsonResponse({'code': RETCODE.DBERR, 'errmsg': '添加邮箱失败'})
+
+        # 4.返回数据
+        return http.JsonResponse({'code': RETCODE.OK, 'errmsg': '添加邮箱成功'})
 
 
 # 用户中心,判断用户是否登录
