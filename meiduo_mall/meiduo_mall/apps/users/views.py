@@ -6,12 +6,13 @@ from django.shortcuts import render,redirect
 from django.urls import reverse
 from django.views import View
 from django_redis import get_redis_connection
-from meiduo_mall.meiduo_mall.utils import views
+from meiduo_mall.utils import views
 from .models import User
 import re
 from meiduo_mall.utils.response_code import RETCODE
 import json
 import logging
+from celery_task.email.tasks import send_verify_email
 
 
 logger = logging.getLogger('django')
@@ -35,7 +36,7 @@ class EmailView(views.LoginRequiredJSONMixin, View):
         # if not request.user.is_authenticated():
         #     return http.JsonResponse({'code': RETCODE.SESSIONERR, 'errmsg': '用户未登录'})
 
-        # 1.获取数据
+        # 1.获取邮箱数据
             # post和put方法将信息包请求体中，put方法是需要从请求体的body中拿出
             # 了解http协议的规范
             # email = request.body  # b'{"email":"723102747@qq.com"}'
@@ -48,7 +49,7 @@ class EmailView(views.LoginRequiredJSONMixin, View):
         if not re.match(r'^[a-z0-9][\w\.\-]*@[a-z0-9\-]+(\.[a-z]{2,5}){1,2}$', email):
             return http.HttpResponseForbidden('参数email有误')
 
-        # 3.保存数据
+        # 3.保存邮箱数据
             # 保存数据也可以使用User.objects.create,但是这个更方便
         try:
             request.user.email = email
@@ -57,7 +58,11 @@ class EmailView(views.LoginRequiredJSONMixin, View):
             logger.error()
             return http.JsonResponse({'code': RETCODE.DBERR, 'errmsg': '添加邮箱失败'})
 
-        # 4.返回数据
+        # 4.发送邮件
+        verify_url = '这是验证连接'
+        to_email = email
+        send_verify_email(to_email, verify_url)
+        # 5.返回数据
         return http.JsonResponse({'code': RETCODE.OK, 'errmsg': '添加邮箱成功'})
 
 
