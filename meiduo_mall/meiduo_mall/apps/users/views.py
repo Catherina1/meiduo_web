@@ -7,6 +7,8 @@ from django.urls import reverse
 from django.views import View
 from django_redis import get_redis_connection
 from meiduo_mall.utils import views
+
+from .utils import check_email_verify_url
 from .models import User
 import re
 from meiduo_mall.utils.response_code import RETCODE
@@ -29,6 +31,35 @@ logger = logging.getLogger('django')
 
 
 # 这里使用了类视图写法,一些处理都被类视图封装起来了
+
+class EmailVerifyView(View):
+    """
+    邮箱链接认证
+    """
+    def get(self, request):
+
+        # 1.获取链接里token的用户ID和邮箱信息(接收参数)
+        token = request.GET.get('token')
+
+        # 2.判断token是否存在或者过期
+        if not token:
+            return http.HttpResponseForbidden('缺少必传参数')
+        #   2.1 获取token的用户信息，判断是否是当前用户
+        user = check_email_verify_url(token)
+
+        # 3.存在则email_active中保存true
+        if not user:
+            return http.HttpResponseForbidden('无效的token')
+        try:
+            user.email_active = True
+            user.save()
+        except Exception as e:
+            logger.error(e)
+            return http.HttpResponseServerError('激活邮件失败')
+
+        # 4.返回邮箱验证结果
+        return redirect(reverse('users:info'))
+
 
 class EmailView(views.LoginRequiredJSONMixin, View):
     """保存和绑定邮箱"""
@@ -56,15 +87,15 @@ class EmailView(views.LoginRequiredJSONMixin, View):
             request.user.email = email
             request.user.save()
         except Exception as e:
-            logger.error()
+            logger.error(e)
             return http.JsonResponse({'code': RETCODE.DBERR, 'errmsg': '添加邮箱失败'})
 
         # 4.发送邮件
-        # 4.1 生成相应的邮箱验证地址
+        #   4.1 生成相应的邮箱验证地址
         user = request.user
         verify_url = utils.generate_email_verify_url(user)
         to_email = email
-        # 4.2 发送邮件
+        #   4.2 发送邮件
         send_verify_email.delay(to_email, verify_url)
         # 5.返回数据
         return http.JsonResponse({'code': RETCODE.OK, 'errmsg': '添加邮箱成功'})
