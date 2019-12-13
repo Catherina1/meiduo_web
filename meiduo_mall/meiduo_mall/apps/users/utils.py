@@ -1,7 +1,7 @@
 from django.contrib.auth.backends import ModelBackend
 import re
 
-from meiduo_mall.apps.verifications import constants
+from . import constants
 from .models import User
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from django.conf import settings
@@ -20,7 +20,6 @@ def generate_email_verify_url(user):
     token = serializer.dumps(user_data).decode()
     verify_url = settings.EMAIL_VERIFY_URL + '?token=' + token
     return verify_url
-
 
 
 def get_user_by_acount(username):

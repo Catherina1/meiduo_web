@@ -62,10 +62,10 @@ class EmailView(views.LoginRequiredJSONMixin, View):
         # 4.发送邮件
         # 4.1 生成相应的邮箱验证地址
         user = request.user
-        utils.generate_email_verify_url(user)
-        verify_url = '这是验证连接'
+        verify_url = utils.generate_email_verify_url(user)
         to_email = email
-        send_verify_email(to_email, verify_url)
+        # 4.2 发送邮件
+        send_verify_email.delay(to_email, verify_url)
         # 5.返回数据
         return http.JsonResponse({'code': RETCODE.OK, 'errmsg': '添加邮箱成功'})
 
