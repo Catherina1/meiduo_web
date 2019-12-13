@@ -13,6 +13,7 @@ from meiduo_mall.utils.response_code import RETCODE
 import json
 import logging
 from celery_task.email.tasks import send_verify_email
+from . import utils
 
 
 logger = logging.getLogger('django')
@@ -59,6 +60,9 @@ class EmailView(views.LoginRequiredJSONMixin, View):
             return http.JsonResponse({'code': RETCODE.DBERR, 'errmsg': '添加邮箱失败'})
 
         # 4.发送邮件
+        # 4.1 生成相应的邮箱验证地址
+        user = request.user
+        utils.generate_email_verify_url(user)
         verify_url = '这是验证连接'
         to_email = email
         send_verify_email(to_email, verify_url)

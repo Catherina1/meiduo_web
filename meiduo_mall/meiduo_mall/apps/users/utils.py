@@ -1,6 +1,26 @@
 from django.contrib.auth.backends import ModelBackend
 import re
+
+from meiduo_mall.apps.verifications import constants
 from .models import User
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from django.conf import settings
+
+
+def generate_email_verify_url(user):
+    """
+    生成邮箱验证链接
+    :param user: 实时用户信息
+    :return: verify url
+    """
+    # 创建一个签名对象
+    serializer = Serializer(settings.SECRET_KEY, expires_in=constants.VERIFY_EMAIL_TOKEN_EXPIRES)
+    # 使用对象对要加密的东西加密
+    user_data = {'user_id': user.id, 'user_email': user.email}
+    token = serializer.dumps(user_data).decode()
+    verify_url = settings.EMAIL_VERIFY_URL + '?token=' + token
+    return verify_url
+
 
 
 def get_user_by_acount(username):
