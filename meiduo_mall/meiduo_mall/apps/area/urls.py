@@ -2,5 +2,5 @@ from django.conf.urls import url
 from . import views
 
 urlpatterns = [
-    url(r'^areas/$', views.AddressView.as_view(), name='area'),
+    url(r'^areas/$', views.AddressView.as_view(), name='address'),
 ]

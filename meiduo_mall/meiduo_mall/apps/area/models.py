@@ -5,7 +5,7 @@ from django.db import models
 class Area(models.Model):
     """省市区"""
     name = models.CharField(max_length=200,verbose_name='名称')
-    parent = models.ForeignKey('self', on_delete=models.SET_NULL, related_name='subs', null=True, blank=True,verbose_name="上级行政区")
+    parent = models.ForeignKey('self', on_delete=models.SET_NULL, related_name='subs', null=True, blank=True, verbose_name="上级行政区")
 
     class Meta:
         db_table = 'tb_areas'

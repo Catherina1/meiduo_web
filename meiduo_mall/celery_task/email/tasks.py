@@ -6,7 +6,7 @@ logger = logging.getLogger('django')
 
 
 @celery_app.task(name='send_verify_email')
-def send_verify_email(self, to_email, verify_url):
+def send_verify_email( to_email, verify_url):
     '''
     :param to_email: 收件人
     :param verify_url: 验证链接
@@ -26,4 +26,4 @@ def send_verify_email(self, to_email, verify_url):
         send_mail(subject, "", html_message=html_message, from_email=settings.EMAIL_FROM, recipient_list=[to_email])
     except Exception as e:
         logger.error(e)
-        raise self.retry(exc=e, max_retries=3)
+        # raise self.retry(exc=e, max_retries=3)
