@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     # 'meiduo_mall.app.users',
     'users',  # 追加导包路径后添加app时简单很多, 此处又有一个坑，先别配置apps,不然会报错manage startapp 不了
     'oauth',
+    'area',
 ]
 
 MIDDLEWARE = [
