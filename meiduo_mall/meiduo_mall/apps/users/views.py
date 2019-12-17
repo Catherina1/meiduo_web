@@ -31,6 +31,11 @@ logger = logging.getLogger('django')
 
 
 # 这里使用了类视图写法,一些处理都被类视图封装起来了
+class AddressView(LoginRequiredMixin, View):
+    """用户收货地址页面"""
+    def get(self, request):
+        return render(request, 'user_center_site.html')
+
 
 class EmailVerifyView(View):
     """
