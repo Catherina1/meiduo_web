@@ -34,6 +34,7 @@ logger = logging.getLogger('django')
 # 这里使用了类视图写法,一些处理都被类视图封装起来了
 class UpdateDestroyAddressView(LoginRequiredJSONMixin, View):
     """修改和删除地址"""
+
     def put(self, request, address_id):
         """根据传来的数据修改地址（与前端vue的创建地址同一个方法）"""
         # 接收参数
@@ -93,6 +94,22 @@ class UpdateDestroyAddressView(LoginRequiredJSONMixin, View):
         }
         # 响应更新地址结果
         return http.JsonResponse({'code': RETCODE.OK, 'errmsg': '更新地址成功', 'address': address_dict})
+
+    def delete(self, request, address_id):
+        """删除操作"""
+        try:
+            # 查询要删除的地址
+            address = Address.objects.get(id=address_id)
+
+            # 将逻辑删除的值进行设定True
+            address.is_deleted = True
+            address.save()
+        except Exception as e:
+            logger.error(e)
+            return http.JsonResponse({'code': RETCODE.DBERR, 'errmsg': '删除地址失败'})
+        # 响应删除地址结果
+        return http.JsonResponse({'code': RETCODE.OK, 'errmsg': '删除地址成功'})
+
 
 
 class CreateAddressView(LoginRequiredMixin, View):
