@@ -98,9 +98,34 @@ class CreateAddressView(LoginRequiredMixin, View):
 
 
 class AddressView(LoginRequiredMixin, View):
-    """用户收货地址页面"""
+    """展示用户收货地址页面"""
     def get(self, request):
-        return render(request, 'user_center_site.html')
+        # 获取用户地址
+        login_user = request.user  # 获取当前用户
+        address = Address.objects.filter(user=login_user)  # 当前用户的地址列表
+        address_dict_list = []
+        for address_item in address:
+            address_dict = {
+                "id": address_item.id,
+                "title": address_item.title,
+                "receiver": address_item.receiver,
+                "province": address_item.province.name,
+                "city": address_item.city.name,
+                "district": address_item.district.name,
+                "place": address_item.place,
+                "mobile": address_item.mobile,
+                "tel": address_item.tel,
+                "email": address_item.email
+            }
+            address_dict_list.append(address_dict)
+
+        context = {
+            'default_address_id': login_user.default_address_id,
+            'addresses': address_dict_list,
+        }
+
+        # 返回数据到页面
+        return render(request, 'user_center_site.html', context)
 
 
 class EmailVerifyView(View):
