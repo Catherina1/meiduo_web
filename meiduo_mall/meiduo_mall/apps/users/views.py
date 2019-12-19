@@ -32,6 +32,23 @@ logger = logging.getLogger('django')
 
 
 # 这里使用了类视图写法,一些处理都被类视图封装起来了
+class DefaultAddressView(LoginRequiredJSONMixin, View):
+    """设置默认地址"""
+    def put(self, request, address_id):
+        # 接收参数,查询地址
+        try:
+            address = Address.objects.get(id=address_id)
+            # 设置默认地址
+            request.user.default_address = address
+            request.user.save()
+        except Exception as e:
+            logger.error(e)
+            return http.JsonResponse({'code': RETCODE.DBERR, 'errmsg': '设置默认地址失败'})
+
+        # 响应默认地址结果
+        return http.JsonResponse({'code': RETCODE.OK, 'errmsg': '设置默认地址成功'})
+
+
 class UpdateDestroyAddressView(LoginRequiredJSONMixin, View):
     """修改和删除地址"""
 
@@ -111,7 +128,6 @@ class UpdateDestroyAddressView(LoginRequiredJSONMixin, View):
         return http.JsonResponse({'code': RETCODE.OK, 'errmsg': '删除地址成功'})
 
 
-
 class CreateAddressView(LoginRequiredMixin, View):
     """新增用户地址"""
     def post(self, request):
@@ -184,7 +200,7 @@ class AddressView(LoginRequiredMixin, View):
     def get(self, request):
         # 获取用户地址
         login_user = request.user  # 获取当前用户
-        address = Address.objects.filter(user=login_user)  # 当前用户的地址列表
+        address = Address.objects.filter(user=login_user, is_deleted=False)  # 当前用户的地址列表,再执行逻辑删除操作，需要查询相应字段
         address_dict_list = []
         for address_item in address:
             address_dict = {
