@@ -65,7 +65,7 @@
             <a @click="show_add_site">新增收货地址</a>
             <span>你已创建了<b>[[ addresses.length ]]</b>个收货地址，最多可创建<b>20</b>个</span>
         </div>
-        <div class="site_con" v-for="(address, index) in addresses">
+        <div class="site_con" v-for="(address,index) in addresses">
             <div class="site_title">
                 <h3>[[ address.title ]]</h3>
                 <a href="javascript:;" class="edit_icon"></a>
@@ -82,54 +82,10 @@
             </ul>
             <div class="down_btn">
                 <a v-if="address.id!=default_address_id">设为默认</a>
-                <a href="javascript:;" class="edit_icon">编辑</a>
+                <a @click="show_edit_site(index)" class="edit_icon">编辑</a>
             </div>
         </div>
     </div>
-{#		<div class="right_content clearfix" v-cloak>#}
-{#			<div class="site_top_con">#}
-{#				<a @click="show_add_site">新增收货地址</a>#}
-{#				<span>你已创建了<b>2</b>个收货地址，最多可创建<b>20</b>个</span>#}
-{#			</div>#}
-{#			<div class="site_con">#}
-{#				<div class="site_title">#}
-{#					<h3>传智播客 北京</h3>#}
-{#					<a href="javascript:;" class="edit_icon"></a>#}
-{#					<em>默认地址</em>						#}
-{#					<span class="del_site">×</span>#}
-{#				</div>#}
-{#				<ul class="site_list">#}
-{#					<li><span>收货人：</span><b>传智播客</b></li>#}
-{#					<li><span>所在地区：</span><b>北京市昌平区</b></li>#}
-{#					<li><span>地址：</span><b>建材城西路</b></li>#}
-{#					<li><span>手机：</span><b>188****0001</b></li>#}
-{#					<li><span>固定电话：</span><b>78912345</b></li>#}
-{#					<li><span>电子邮箱：</span><b>hmmeiduo@163.com</b></li>#}
-{#				</ul>#}
-{#				<div class="down_btn">#}
-{#					<a href="javascript:;" class="edit_icon">编辑</a>#}
-{#				</div>#}
-{#			</div>#}
-{#			<div class="site_con">#}
-{#				<div class="site_title">#}
-{#					<h3>传智播客 北京</h3>#}
-{#					<a href="javascript:;" class="edit_icon"></a>#}
-{#					<span class="del_site">×</span>#}
-{#				</div>#}
-{#				<ul class="site_list">#}
-{#					<li><span>收货人：</span><b>传智播客</b></li>#}
-{#					<li><span>所在地区：</span><b>北京市昌平区</b></li>#}
-{#					<li><span>地址：</span><b>建材城西路</b></li>#}
-{#					<li><span>手机：</span><b>188****0001</b></li>#}
-{#					<li><span>固定电话：</span><b>78912345</b></li>#}
-{#					<li><span>电子邮箱：</span><b>hmmeiduo@163.com</b></li>#}
-{#				</ul>#}
-{#				<div class="down_btn">#}
-{#					<a href="javascript:;" class="set_default">设为默认</a>#}
-{#					<a href="javascript:;" class="edit_icon">编辑</a>#}
-{#				</div>#}
-{#			</div>			#}
-{#		</div>#}
 	</div>
 	<div class="footer">
 		<div class="foot_link">
