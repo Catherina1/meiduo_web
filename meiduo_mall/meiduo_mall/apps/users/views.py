@@ -152,6 +152,10 @@ class CreateAddressView(LoginRequiredMixin, View):
     """新增用户地址"""
     def post(self, request):
         # 每个用户地址不能超过20个
+        # related_name = 'xx' 这个某某就代表子对象的名字
+        count = request.user.addresses.count()
+        if count >= 20:
+            return http.JsonResponse({'code': RETCODE.THROTTLINGERR, 'errmsg': '超过地址数量上限'})
         # 接收传进来的参数(注意前端传进来的参数类型)
         json_dict = json.loads(request.body.decode())
         receiver = json_dict.get('receiver')
@@ -164,7 +168,7 @@ class CreateAddressView(LoginRequiredMixin, View):
         email = json_dict.get('email')
 
         # 校验参数
-        if not all([receiver, province_id, city_id, district_id, place, mobile, tel, email]):
+        if not all([receiver, province_id, city_id, district_id, place, mobile]):
             return http.HttpResponseForbidden('缺少必要的参数')
         if not re.match(r'^1[3-9]\d{9}$', mobile):
             return http.HttpResponseForbidden('参数mobile有误')
