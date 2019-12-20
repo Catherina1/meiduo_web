@@ -32,6 +32,22 @@ logger = logging.getLogger('django')
 
 
 # 这里使用了类视图写法,一些处理都被类视图封装起来了
+class ChangePasswordView(LoginRequiredMixin, View):
+    """更改密码"""
+    # 获取修改密码界面
+    def get(self, request):
+        return render(request, 'user_center_pass.html')
+
+    # 更改密码
+    def post(self, request):
+        # 接收参数
+        # 校验参数
+        # 更改更新密码
+        # 清理状态保持
+        # 返回结果
+        pass
+
+
 class UpdateTitleAddressView(LoginRequiredJSONMixin, View):
     def put(self, request, address_id):
         # 接收参数
