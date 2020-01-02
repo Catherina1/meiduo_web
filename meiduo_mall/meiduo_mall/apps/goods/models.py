@@ -19,7 +19,7 @@ class GoodsCategory(BaseModel):
 
 
 class GoodsChannelGroup(BaseModel):
-    """商品频道组"""
+    """商品频道组(就是首页商品分类那块三级联动)"""
     name = models.CharField(max_length=20, verbose_name='频道组名')
 
     class Meta:

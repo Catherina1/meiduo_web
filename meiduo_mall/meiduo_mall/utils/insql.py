@@ -1,4 +1,5 @@
 import pymysql
+import re
 """
 测试的时候由于使用批量导入sql出现问题，则使用这样的单条插入数据库的脚本运行
 （mysql -h数据库ip地址 -u数据库用户名 -p数据库密码 数据库 < areas.sql）没倒进来
@@ -12,10 +13,10 @@ conn = pymysql.connect(
     charset='utf8')
 
 cursor = conn.cursor()
-
-with open('areas.sql', 'r', encoding='utf8') as f:
+sql_file = input('sal_name_path:')
+with open(sql_file, 'r', encoding='utf8') as f:
     while True:
-        line = f.readline()
+        # line = f.readline()
 
         if line:
             print(line)
