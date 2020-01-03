@@ -234,3 +234,9 @@ EMAIL_HOST_USER = 'itchenqx@163.com'  # 授权的邮箱
 EMAIL_HOST_PASSWORD = 'chenqx1234'  # 邮箱授权时获得的密码，非注册登录密码
 EMAIL_FROM = '<itchenqx@163.com>'  # 发件人抬头
 EMAIL_VERIFY_URL = 'http://www.meiduo.site:8000/emails/verification/'
+
+# 设置文件存储路径为fastdfs的绝对路径
+DEFAULT_FILE_STORAGE = 'meiduo_mall.utils.fastdfs.fastdfs_storage.FastDFSStorage'
+# FastDFS相关参数
+# 使用的docker里面的fastdfs里封装了nginx服务，里面设置的端口是8888
+FDFS_BASE_URL = 'http://192.168.154.130:8888/'
