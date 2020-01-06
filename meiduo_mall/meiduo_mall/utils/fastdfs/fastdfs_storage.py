@@ -12,10 +12,16 @@ class FastDFSStorage(Storage):
         不全的，对数据库中的现有路径做一个拼接
         这是文档给的自定义文件存储系统的链接： https://docs.djangoproject.com/en/1.11/howto/custom-file-storage
     """
+    # 文档给的优化代码提示,优化代码，简洁一点
     # def __init__(self, option=None):
     #     if not option:
     #         option = settings.CUSTOM_STORAGE_OPTIONS
     #         pass
+    def __init__(self, fastdfs_url=None):
+        # if not fastdfs_url:
+        #     self.fastdfs_url = FDFS_BASE_URL
+        # self.fastdfs_url = fastdfs_url
+        self.fastdfs_url = fastdfs_url or FDFS_BASE_URL
 
     # 查看文档里有提到说必须写_open和_save
     def _open(self, name, mode='rb'):
@@ -43,6 +49,6 @@ class FastDFSStorage(Storage):
         :param name: 当前传进来的路径name:group1/M00/00/00/wKhnnlxw_gmAcoWmAAEXU5wmjPs35.jpeg
         :return: fastdfs拼接好的路径: http://192.168.103.158:8888/group1/M00/00/00/wKhnnlxw_gmAcoWmAAEXU5wmjPs35.jpeg
         """
-        return FDFS_BASE_URL + name
+        return self.fastdfs_url + name
 
 
