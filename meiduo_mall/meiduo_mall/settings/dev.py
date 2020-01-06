@@ -226,14 +226,22 @@ QQ_CLIENT_ID = '101518219'
 QQ_CLIENT_SECRET = '418d84ebdc7241efb79536886ae95224'
 QQ_REDIRECT_URI = 'http://www.meiduo.site:8000/oauth_callback'
 
+# ============== 时隔一段时间代码也没有改动，再进行邮箱激活则报错，于是使用另一个账号则没有出现这类型原因(无数次测试找不出原因) =============
 # 发送邮件验证的一些参数
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # 指定邮件后端
-EMAIL_HOST = 'smtp.163.com'  # 发邮件主机
-EMAIL_PORT = 25  # 发邮件端口
-EMAIL_HOST_USER = 'itchenqx@163.com'  # 授权的邮箱
-EMAIL_HOST_PASSWORD = 'chenqx1234'  # 邮箱授权时获得的密码，非注册登录密码
-EMAIL_FROM = '<itchenqx@163.com>'  # 发件人抬头
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # 指定邮件后端
+# EMAIL_HOST = 'smtp.163.com'  # 发邮件主机
+# EMAIL_PORT = 25  # 发邮件端口
+# EMAIL_HOST_USER = 'itchenqx@163.com'  # 授权的邮箱
+# EMAIL_HOST_PASSWORD = 'chenqx1234'  # 邮箱授权时获得的密码，非注册登录密码 登陆密码：chenqx123
+# EMAIL_FROM = '<itchenqx@163.com>'  # 发件人抬头
 EMAIL_VERIFY_URL = 'http://www.meiduo.site:8000/emails/verification/'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend' # 指定邮件后端
+EMAIL_HOST = 'smtp.163.com' # 发邮件主机
+EMAIL_PORT = 25 # 发邮件端口
+EMAIL_HOST_USER = 'hmmeiduo@163.com' # 授权的邮箱
+EMAIL_HOST_PASSWORD = 'hmmeiduo123' # 邮箱授权时获得的密码，非注册登录密码
+EMAIL_FROM = '美多商城<hmmeiduo@163.com>' # 发件人抬头
 
 # 设置文件存储路径为fastdfs的绝对路径
 DEFAULT_FILE_STORAGE = 'meiduo_mall.utils.fastdfs.fastdfs_storage.FastDFSStorage'
