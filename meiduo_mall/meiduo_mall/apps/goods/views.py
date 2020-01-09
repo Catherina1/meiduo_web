@@ -1,4 +1,5 @@
 from django import http
+from django.core.paginator import Paginator, EmptyPage
 from django.shortcuts import render
 from django.views import View
 from .utils import get_breadcrumb
@@ -35,6 +36,17 @@ class ListView(View):
         skus = category.sku_set.filter(is_launched=True).order_by(sort_field)
         # skus = SKU.objects.filter(category=category, is_launched=True).order_by(sort_field)
 
+        # 5. 添加分页查询功能
+        # 创建分页器
+        paginator = Paginator(skus, 5)  # 分成5页
+        # 获取每页商品数据
+        try:
+            # 获取当前页数的数据
+            page_skus = paginator.page(page_num)
+        except EmptyPage:
+            return http.HttpResponseNotFound('empty page')
+        # 获取列表总页数
+        total_page = paginator.num_pages
 
         context = {
             'categories': categories,
