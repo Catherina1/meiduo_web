@@ -3,7 +3,7 @@ from .models import  ContentCategory
 from goods.models import GoodsCategory,GoodsChannel,GoodsChannelGroup
 
 
-def get_categories(self, request):
+def get_categories():
     """获取商品的分类"""
     # 1.展示商品分类
     # categories = {}  # 整个大字典需要传给前端的数据

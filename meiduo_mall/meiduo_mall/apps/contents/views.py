@@ -10,7 +10,7 @@ class IndexView(View):
     def get(self,request):
         # 展示首页
         # 1.展示商品分类
-        categories = get_categories(self, request)
+        categories = get_categories()
         # 2.展示轮播图等图片商品广告
         content = {}
         # 获取广告分类（分类一共有25种）
