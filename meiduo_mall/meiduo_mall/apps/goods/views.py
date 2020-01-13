@@ -2,10 +2,34 @@ from django import http
 from django.core.paginator import Paginator, EmptyPage
 from django.shortcuts import render
 from django.views import View
+
+from meiduo_mall.utils.response_code import RETCODE
 from .utils import get_breadcrumb
 from .models import GoodsCategory, SKU
 from contents.utils import get_categories
 # Create your views here.
+
+
+class HotView(View):
+    """查询列表页热销排行"""
+    def get(self, request, category_id):
+        # 1. 根据销量排序
+        skus = SKU.objects.filter(category_id = category_id, is_launched=True).order_by('-sales')[:2]
+        # 2. 封装成json数据
+        hot_sku = []
+        for sku in skus:
+            hot_sku.append({
+                'id': sku.id,
+                'default_image_url': sku.default_image.url,
+                'name': sku.name,
+                'price': sku.price,
+            })
+        json_context = {
+            'code': RETCODE.OK,
+            'errmsg': 'OK',
+            'hot_sku': hot_sku,
+        }
+        return http.JsonResponse(json_context)
 
 
 class ListView(View):

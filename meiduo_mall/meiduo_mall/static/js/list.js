@@ -4,7 +4,7 @@ let vm = new Vue({
     data: {
         username: getCookie('username'),
         category_id: category_id,
-        hot_skus: [],
+        hot_sku: [],
         cart_total_count: 0,
         carts: [],
     },
@@ -23,9 +23,9 @@ let vm = new Vue({
                     responseType: 'json'
                 })
                     .then(response => {
-                        this.hot_skus = response.data.hot_skus;
-                        for(let i=0; i<this.hot_skus.length; i++){
-                            this.hot_skus[i].url = '/detail/' + this.hot_skus[i].id + '/';
+                        this.hot_sku = response.data.hot_sku;
+                        for(let i=0; i<this.hot_sku.length; i++){
+                            this.hot_sku[i].url = '/detail/' + this.hot_sku[i].id + '/';
                         }
                     })
                     .catch(error => {
