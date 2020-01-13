@@ -51,5 +51,10 @@ class ListView(View):
         context = {
             'categories': categories,
             'breadcrumb': breadcrumb,
+            'sort': sort,  # 排序字段
+            'category': category,  # 第三级分类
+            'page_skus': page_skus,  # 分页后数据
+            'total_page': total_page,  # 总页数
+            'page_num': page_num,  # 当前页码
         }
         return render(request, 'list.html', context)
