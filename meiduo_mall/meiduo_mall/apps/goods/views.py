@@ -10,6 +10,36 @@ from contents.utils import get_categories
 # Create your views here.
 
 
+# 商品详情页
+class DetailView(View):
+    """商品详情页"""
+
+    def get(self, request, sku_id):
+        """提供商品详情页"""
+        # 1.接收和校验参数
+        try:
+            # sku = SKU.objects.filter(id=sku_id).first()  # 返回列表
+            sku = SKU.objects.get(id=sku_id)  # get 方法获取的是精确数据
+        except SKU.DoesNotExist:
+            return render(request, '404.html')
+
+        # 2.商品频道分类数据
+        categories = get_categories()
+
+        # 3.面包屑导航
+        breadcrumb = get_breadcrumb(sku.category)
+
+        # 4.热销排行
+        context = {
+            'categories': categories,
+            'breadcrumb': breadcrumb,
+            'sku': sku,
+        }
+
+        return render(request, 'detail.html', context)
+
+
+# 热销排行
 class HotView(View):
     """查询列表页热销排行"""
     def get(self, request, category_id):
@@ -32,6 +62,7 @@ class HotView(View):
         return http.JsonResponse(json_context)
 
 
+# 商品列表页
 class ListView(View):
     def get(self, request, category_id, page_num):
         """获取商品列表页"""
