@@ -134,8 +134,8 @@
 			<ul class="goods_type_list clearfix">
                 {% for skus in page_skus %}
 				<li>
-					<a href="detail.html"><img src="{{ skus.default_image.url }}"></a>
-					<h4><a href="detail.html">{{ skus.name }}</a></h4>
+					<a href="{{ url('goods:detail', args=(skus.id,)) }}"><img src="{{ skus.default_image.url }}"></a>
+					<h4><a href="{{ url('goods:detail', args=(skus.id,)) }}">{{ skus.name }}</a></h4>
 					<div class="operate">
 						<span class="price">{{ skus.price }}</span>
 						<span class="unit">台</span>
