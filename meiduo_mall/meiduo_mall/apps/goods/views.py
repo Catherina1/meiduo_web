@@ -1,13 +1,50 @@
+import datetime
+
 from django import http
 from django.core.paginator import Paginator, EmptyPage
 from django.shortcuts import render
+from django.utils import timezone
 from django.views import View
 
 from meiduo_mall.utils.response_code import RETCODE
 from .utils import get_breadcrumb
-from .models import GoodsCategory, SKU
+from .models import GoodsCategory, SKU, GoodsVisitCount
 from contents.utils import get_categories
 # Create your views here.
+
+
+# 统计分类商品访问量
+class DetailVisitView(View):
+    """详情分类商品统计访问量"""
+
+    def post(self, request, category_id):
+        """ajax 发来的请求，从而让统计访问次数"""
+        try:
+            category = GoodsCategory.objects.get(id=category_id)
+        except GoodsCategory.DoesNotExist:
+            return http.HttpResponseForbidden('缺少必传参数')
+
+        # 获取当天日期
+        t = timezone.localtime()
+        today_str = '%d-%02d-%02d' % (t.year, t.month, t.day)
+        today_date = datetime.datetime.strptime(today_str, '%Y-%m-%d')
+
+        try:
+            # 查询今天该类别的商品访问量
+            counts_data = category.goodsvisitcount_set.get(date=today_date)
+        except GoodsVisitCount.DoesNotExist:
+            # 如果该类别的商品在今天没有过访问记录，就新建一个访问记录
+            counts_data = GoodsVisitCount()
+
+        try:
+            counts_data.category = category
+            counts_data.count += 1
+            counts_data.save()
+        except Exception as e:
+            # logger.error(e)
+            return http.HttpResponseServerError('服务器异常')
+
+        return http.JsonResponse({'code': RETCODE.OK, 'errmsg': 'OK'})
 
 
 # 商品详情页

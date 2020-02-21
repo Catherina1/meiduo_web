@@ -30,7 +30,7 @@ let vm = new Vue({
 		// 获取热销商品数据
         this.get_hot_skus();
         // 记录分类商品的访问量
-		//this.goods_visit_count();
+		this.goods_visit_count();
         // 保存用户浏览记录
 		//this.save_browse_histories();
 		// 获取简单购物车数据

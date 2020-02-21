@@ -248,13 +248,13 @@ EMAIL_FROM = '美多商城<hmmeiduo@163.com>' # 发件人抬头
 DEFAULT_FILE_STORAGE = 'meiduo_mall.utils.fastdfs.fastdfs_storage.FastDFSStorage'
 # FastDFS相关参数
 # 使用的docker里面的fastdfs里封装了nginx服务，里面设置的端口是8888
-FDFS_BASE_URL = 'http://192.168.154.130:8888/'
+FDFS_BASE_URL = 'http://192.168.154.131:8888/'
 
 # Haystack
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-        'URL': 'http://192.168.154.130:9200/',  # Elasticsearch服务器ip地址，端口号固定为9200
+        'URL': 'http://192.168.154.131:9200/',  # Elasticsearch服务器ip地址，端口号固定为9200
         'INDEX_NAME': 'meiduo_mall',  # Elasticsearch建立的索引库的名称
     },
 }
