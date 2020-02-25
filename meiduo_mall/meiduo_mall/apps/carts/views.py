@@ -8,7 +8,7 @@ from django.views import View
 # Create your views here.
 from django_redis import get_redis_connection
 
-from meiduo_mall.apps.goods import models
+from goods import models
 from meiduo_mall.utils.response_code import RETCODE
 
 
@@ -48,7 +48,7 @@ class CartsView(View):
         if user.is_authenticated:
             # 3.用户已登录，操作redis数据库
             redis_conn = get_redis_connection('carts')
-            pl = redis_conn.pipline()
+            pl = redis_conn.pipeline()
             # 新增购物车数据（使用redis中的哈希表hash数据结构）
             pl.hincrby('carts_%s' % user.id, sku_id, count)
             # 新增选中状态(只存储状态使用redis中的set数据结构存储)
