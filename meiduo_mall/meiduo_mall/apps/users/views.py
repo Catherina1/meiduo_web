@@ -34,9 +34,10 @@ logger = logging.getLogger('django')
 
 # 这里使用了类视图写法,一些处理都被类视图封装起来了
 class UserBrowseHistory(LoginRequiredJSONMixin, View):
-    """（前提必须要用户处于登录状态）保存用户浏览记录"""
+    """（前提必须要用户处于登录状态）用户浏览记录"""
 
     def post(self, request):
+        """保存用户浏览记录"""
         # 接收参数
         json_dict = json.loads(request.body.decode())
         sku_id = json_dict.get('sku_id')
@@ -62,6 +63,29 @@ class UserBrowseHistory(LoginRequiredJSONMixin, View):
 
         # 响应结果
         return http.JsonResponse({'code': RETCODE.OK, 'errmsg': 'OK'})
+
+    def get(self, request):
+        """查询用户浏览记录"""
+        # 1.查询当前用户
+        user = request.user
+
+        # 2.获取redis中sku_id的信息
+        redis_conn = get_redis_connection('history')
+        sku_ids = redis_conn.lrange('history_%s' % request.user.id, 0, -1)  # 获取redis中sku_id(一个列表)
+
+        # 3.根据sku_id查询相应的商品信息
+        skus = []
+        for sku_id in sku_ids:
+            sku = SKU.objects.get(id=sku_id)
+            skus.append({
+                'id': sku.id,
+                'name': sku.name,
+                'default_image_url': sku.default_image.url,
+                'price': sku.price
+            })
+
+        # 4.返回数据集信息
+        return http.JsonResponse({'code': RETCODE.OK, 'errmsg': 'ok', 'skus': skus})
 
 
 class ChangePasswordView(LoginRequiredMixin, View):
