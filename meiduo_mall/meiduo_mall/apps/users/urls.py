@@ -16,4 +16,6 @@ urlpatterns = [
     url(r'^addresses/(?P<address_id>\d+)/default/$', views.DefaultAddressView.as_view(), name='address_default'),
     url(r'^addresses/(?P<address_id>\d+)/title/$', views.UpdateTitleAddressView.as_view(), name='address_title'),
     url(r'^pass/$', views.ChangePasswordView.as_view(), name='pass'),
+    # 保存商品浏览记录
+    url(r'^browse_histories/$', views.UserBrowseHistory.as_view()),
 ]

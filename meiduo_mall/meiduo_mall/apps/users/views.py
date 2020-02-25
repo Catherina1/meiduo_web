@@ -9,6 +9,7 @@ from django_redis import get_redis_connection
 from meiduo_mall.utils import views
 
 from meiduo_mall.utils.views import LoginRequiredJSONMixin
+from goods.models import SKU
 from .utils import check_email_verify_url
 from .models import User, Address
 import re
@@ -32,6 +33,37 @@ logger = logging.getLogger('django')
 
 
 # 这里使用了类视图写法,一些处理都被类视图封装起来了
+class UserBrowseHistory(LoginRequiredJSONMixin, View):
+    """（前提必须要用户处于登录状态）保存用户浏览记录"""
+
+    def post(self, request):
+        # 接收参数
+        json_dict = json.loads(request.body.decode())
+        sku_id = json_dict.get('sku_id')
+
+        # 校验参数
+        try:
+            SKU.objects.get(id=sku_id)
+        except SKU.DoesNotExist:
+            return http.HttpResponseForbidden('木有这个sku')
+
+        # 保存用户浏览数据
+        redis_conn = get_redis_connection('history')
+        pl = redis_conn.pipeline()
+        user_id = request.user.id
+        # 先去重
+        pl.lrem('history_%s' % user_id, 0, sku_id)
+        # 再存储
+        pl.lpush('history_%s' % user_id, sku_id)
+        # 再截取
+        pl.ltrim('history_%s' % user_id, 0, 4)
+        # 执行管道
+        pl.execute()
+
+        # 响应结果
+        return http.JsonResponse({'code': RETCODE.OK, 'errmsg': 'OK'})
+
+
 class ChangePasswordView(LoginRequiredMixin, View):
     """更改密码"""
     # 获取修改密码界面

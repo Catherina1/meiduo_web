@@ -32,7 +32,7 @@ let vm = new Vue({
         // 记录分类商品的访问量
 		this.goods_visit_count();
         // 保存用户浏览记录
-		//this.save_browse_histories();
+		this.save_browse_histories();
 		// 获取简单购物车数据
         //this.get_carts();
 		// 获取商品评价信息

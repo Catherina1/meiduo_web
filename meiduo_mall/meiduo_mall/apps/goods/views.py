@@ -1,11 +1,9 @@
 import datetime
-
 from django import http
 from django.core.paginator import Paginator, EmptyPage
 from django.shortcuts import render
 from django.utils import timezone
 from django.views import View
-
 from meiduo_mall.utils.response_code import RETCODE
 from .utils import get_breadcrumb
 from .models import GoodsCategory, SKU, GoodsVisitCount
