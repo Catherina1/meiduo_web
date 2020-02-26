@@ -227,6 +227,50 @@ class CartsView(View):
             response.set_cookie('carts', cookie_cart_str, max_age=constants.CARTS_COOKIE_EXPIRES)
             return response
 
+    def delete(self, request):
+        """删除购物车某条数据"""
+        # 1.接收校验数据
+        json_dict = json.loads(request.body.decode())
+        sku_id = json_dict.get('sku_id')
+
+        try:
+            models.SKU.objects.get(id=sku_id)
+        except models.SKU.DoesNotExist:
+            return http.HttpResponseForbidden('没有这个sku_id')
+
+        # 2.判断用户是否登录
+        user = request.user
+        if user.is_authenticated and user is not None:
+            # 用户登录，删除redis购物车
+            redis_conn = get_redis_connection('carts')
+            pl = redis_conn.pipeline()
+            # 删除键，就等价于删除了整条记录
+            pl.hdel('carts_%s' % user.id, sku_id)
+            pl.srem('selected_%s' % user.id, sku_id)
+            pl.execute()
+
+        else:
+            cart_str = request.COOKIES.get('carts')
+            if cart_str:
+                # 将cart_str转成bytes,再将bytes转成base64的bytes,最后将bytes转字典
+                cart_dict = pickle.loads(base64.b64decode(cart_str.encode()))
+            else:
+                cart_dict = {}
+
+            # 创建响应对象
+            response = http.JsonResponse({'code': RETCODE.OK, 'errmsg': '删除购物车成功'})
+            if sku_id in cart_dict:
+                del cart_dict[sku_id]
+                # 将字典转成bytes,再将bytes转成base64的bytes,最后将bytes转字符串
+                cookie_cart_str = base64.b64encode(pickle.dumps(cart_dict)).decode()
+                # 响应结果并将购物车数据写入到cookie
+                response.set_cookie('carts', cookie_cart_str, max_age=constants.CARTS_COOKIE_EXPIRES)
+            return response
+
+
+
+
+
 
 
 
