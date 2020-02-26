@@ -11,6 +11,8 @@ from django_redis import get_redis_connection
 from goods import models
 from meiduo_mall.utils.response_code import RETCODE
 
+from meiduo_mall.apps.users import constants
+
 
 class CartsView(View):
     """管理购物车"""
@@ -83,6 +85,64 @@ class CartsView(View):
             response = http.JsonResponse({'code': RETCODE.OK, 'errmsg': '添加购物车成功'})
             response.set_cookie('carts', cookie_cart_str, max_age=constants.CARTS_COOKIE_EXPIRES)
             return response
+
+    def get(self, request):
+        """展示购物车"""
+        # 1.查询用户登陆状态
+        user = request.user
+
+        if user.is_authenticated:
+            # 2.如果用户登录，从redis中拿取数据
+            redis_conn = get_redis_connection('carts')
+            # 2.1 获取redis购物车中的数据
+            redis_carts = redis_conn.hgetall('carts_%s' % user.id)
+            # 2.2 获取redis中的选中状态
+            cart_select = redis_conn.smembers('selected_%s' % user.id)
+
+            # 2.3 将数据转换成和cookie中一样的格式，方便统一
+            carts_dict = {}
+            for sku_id, count in redis_carts.items():
+                carts_dict[int(sku_id)] = {
+                    'count': int(count),
+                    'selected': sku_id in cart_select
+                }
+
+        else:
+            # 3.用户未登录，从cookie中拿数据
+            cart_str = request.COOKIES.get('carts')
+            if cart_str:
+                # 将字符串各种转换
+                carts_dict = pickle.loads(base64.b64decode(cart_str.encode))
+            else:
+                carts_dict = {}
+
+        # 4.构造展示购物车页面的数据
+        sku_ids = carts_dict.keys()
+        # 这种方式获取每一个sku的信息，可以使用另一种方法__in
+        # for sku_id in sku_ids:
+        #     skus = models.SKU.get(id = sku_id)
+        # 一次性查询出所有的skus
+        skus = models.SKU.objects.filter(id__in=sku_ids)
+        cart_skus = []
+        for sku in skus:
+            cart_skus.append({
+                'id': sku.id,
+                'name': sku.name,
+                'count': carts_dict.get(sku.id).get('count'),
+                'selected': str(carts_dict.get(sku.id).get('selected')),
+                'default_image_url': sku.default_image.url,
+                'price': str(sku.price),
+                'amount': str(sku.price * carts_dict.get(sku.id).get('count'))
+            })
+
+        context = {
+            'cart_skus': cart_skus,
+        }
+
+        # 5.渲染购物车页面
+        return render(request, 'cart.html', context)
+
+
 
 
 
