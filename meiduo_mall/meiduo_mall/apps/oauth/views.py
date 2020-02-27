@@ -13,6 +13,8 @@ from django_redis import get_redis_connection
 from meiduo_mall.utils.response_code import RETCODE
 
 from users.models import User
+
+from meiduo_mall.apps.carts.utils import merge_cart_cookie_to_redis
 from .models import OAuthQQUser
 from .utils import generate_access_token, get_openid_no_pwd
 
@@ -84,6 +86,8 @@ class QQAuthUserView(View):
             # 从哪来走哪去
             state = request.GET.get('state')
             response = redirect(state)
+            # 合并购物车cookie_redis
+            response = merge_cart_cookie_to_redis(request=request, user=user, response=response)
             # 设置cookie
             response.set_cookie('username', qq_user.username, max_age=3600 * 24 * 15)
             return response

@@ -64,7 +64,7 @@ class CartsView(View):
             cart_str = request.COOKIES.get('carts')  # 获取浏览器中的cookie
             if cart_str:  # 如果用户操作过购物车
                 # 使用pickle签名模块对已经加密过的购物车数据进行反序列化
-                cart_dict = pickle.loads(base64.decode(cart_str.encode()))
+                cart_dict = pickle.loads(base64.b64decode(cart_str.encode()))
             else:  # 如果没有操作购物车数据，创建一个
                 cart_dict = {}
 
@@ -112,7 +112,7 @@ class CartsView(View):
             cart_str = request.COOKIES.get('carts')
             if cart_str:
                 # 将字符串各种转换
-                carts_dict = pickle.loads(base64.b64decode(cart_str.encode))
+                carts_dict = pickle.loads(base64.b64decode(cart_str.encode()))
             else:
                 carts_dict = {}
 

@@ -10,6 +10,8 @@ from meiduo_mall.utils import views
 
 from meiduo_mall.utils.views import LoginRequiredJSONMixin
 from goods.models import SKU
+
+from meiduo_mall.apps.carts.utils import merge_cart_cookie_to_redis
 from .utils import check_email_verify_url
 from .models import User, Address
 import re
@@ -487,6 +489,8 @@ class LoginView(View):
         else:
             # 返回数据
             response = redirect(reverse('contents:index'))  # 重定向转到首页
+        # 合并购物车cookie_redis
+        response = merge_cart_cookie_to_redis(request=request, user=user, response=response)
         response.set_cookie('username', user.username, max_age=3600 * 24 * 15)
         # return render(request, 'register.html', {'register_errmsg': '注册成功'})
         return response  # 重定向转到首页
