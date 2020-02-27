@@ -248,7 +248,7 @@ class CartsView(View):
             pl.hdel('carts_%s' % user.id, sku_id)
             pl.srem('selected_%s' % user.id, sku_id)
             pl.execute()
-
+            return http.JsonResponse({'code': RETCODE.OK, 'errmsg': '删除购物车成功'})
         else:
             cart_str = request.COOKIES.get('carts')
             if cart_str:
