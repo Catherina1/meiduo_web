@@ -268,6 +268,46 @@ class CartsView(View):
             return response
 
 
+class CartSelectAllView(View):
+        """全选购物车"""
+        def put(self, request):
+            # 1. 接收校验参数
+            data = request.body.decode()  # axios发出的格式类型定义为json
+            json_dict = json.loads(data)  # json转换成字典
+            selected = json_dict.get('selected', True)
+            if selected:
+                if not isinstance(selected, bool):
+                    return http.HttpResponseForbidden('参数selected错误')
+
+            # 2. 获取用户信息，进行判断
+            user = request.user
+            if user.is_authenticated:
+                # 3. 用户登录状态则操作redis数据库中的select信息，并修改信息覆盖掉
+                redis_conn = get_redis_connection('carts')
+                cart = redis_conn.hgetall('carts_%s' % user.id)
+                sku_id_list = cart.keys() # 获取所有的购物车sku_id
+                if selected:
+                    # 全选
+                    # 当需要放入列表等参数需要循环访问时，可以加*列表名，自动解析拆列表
+                    redis_conn.sadd('selected_%s' % user.id, *sku_id_list)
+                else:
+                    # 取消全选
+                    redis_conn.srem('selected_%s' % user.id, *sku_id_list)
+                return http.JsonResponse({'code': RETCODE.OK, 'errmsg': '全选购物车成功'})
+            else:
+                # 4. 用户未登录则从cookie中操作数据，并且存入cookie中
+                cart = request.COOKIES.get('carts')
+                response = http.JsonResponse({'code': RETCODE.OK, 'errmsg': '全选购物车成功'})
+                if cart is not None:
+                    cart = pickle.loads(base64.b64decode(cart.encode()))
+                    for sku_id in cart:
+                        cart[sku_id]['selected'] = selected
+                    cookie_cart = base64.b64encode(pickle.dumps(cart)).decode()
+                    response.set_cookie('carts', cookie_cart, max_age=constants.CARTS_COOKIE_EXPIRES)
+                return response
+
+
+
 
 
 
