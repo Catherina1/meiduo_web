@@ -24,9 +24,9 @@ class OrderSettlementView(LoginRequiredMixin, View):
 
         # 查询redis中的sku_id 以及数据库中sku 信息
         redis_conn = get_redis_connection('carts')
-        #{sku_id:count}
+        # {sku_id:count}
         redis_cart = redis_conn.hgetall('carts_%s'%user.id)
-        #{sku_id}
+        # {sku_id}
         cart_selected = redis_conn.smembers('selected_%s' % user.id)
         # 新创建一个字典保存数据(被选中的字典)
         # {sku_id:count}
@@ -47,7 +47,7 @@ class OrderSettlementView(LoginRequiredMixin, View):
             total_count += sku.count
             total_amount += Decimal(sku.amount)
         # 运费
-            freight = Decimal('10.00')
+        freight = Decimal('10.00')
         # 渲染界面
         context = {
             'addresses': addresses,
