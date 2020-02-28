@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 # Create your views here.
@@ -44,9 +45,9 @@ class OrderSettlementView(LoginRequiredMixin, View):
             sku.count = new_cart_dict[sku.id]
             sku.amount = sku.count * sku.price
             total_count += sku.count
-            total_amount += sku.amount
+            total_amount += Decimal(sku.amount)
         # 运费
-        freight = 20
+            freight = Decimal('10.00')
         # 渲染界面
         context = {
             'addresses': addresses,
@@ -54,6 +55,6 @@ class OrderSettlementView(LoginRequiredMixin, View):
             'total_count': total_count,
             'total_amount': total_amount,
             'freight': freight,
-            'payment_amount':total_amount + freight
+            'payment_amount': total_amount + freight
         }
         return render(request, 'place_order.html', context)
