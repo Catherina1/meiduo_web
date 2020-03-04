@@ -123,37 +123,58 @@ class OrderCommitView(LoginRequiredJSONMixin, View):
 
                 # 遍历购物车中被勾选的商品信息
                 for sku_id in sku_ids:
-                    # 查询SKU信息
-                    sku = SKU.objects.get(id=sku_id)
-                    # 判断SKU库存
-                    sku_count = carts[sku.id]
-                    if sku_count > sku.stock:
-                        # 出错就回滚
-                        transaction.savepoint_rollback(save_id)
-                        return http.JsonResponse({'code': RETCODE.STOCKERR, 'errmsg': '库存不足'})
+                    # 使用循环是为了让用户提交订单冲突时还有库存的状态下再多次请求下订单
+                    # 直到库存不够则跳出
+                    while True:
+                        # 查询SKU信息
+                        sku = SKU.objects.get(id=sku_id)
 
-                    # sku减少库存
-                    sku.stock -= sku_count
-                    # sku增加销售量
-                    sku.sales += sku_count
-                    sku.save()
+                        # 获取最初的库存和销量
+                        origin_stock = sku.stock
+                        origin_sales = sku.sales
 
-                    # spu增加
-                    # (当某一型号手机卖出，那么这一大类数量也会增加)
-                    sku.spu.sales += sku_count
-                    sku.spu.save()
+                        # 判断SKU库存
+                        sku_count = carts[sku.id]
+                        if sku_count > sku.stock:
+                            # 出错就回滚
+                            transaction.savepoint_rollback(save_id)
+                            return http.JsonResponse({'code': RETCODE.STOCKERR, 'errmsg': '库存不足'})
 
-                    # 保存订单商品信息 OrderGoods（多）
-                    OrderGoods.objects.create(
-                        order=order,
-                        sku=sku,
-                        count=sku_count,
-                        price=sku.price,
-                    )
+                        # # sku减少库存
+                        # sku.stock -= sku_count
+                        # # sku增加销售量
+                        # sku.sales += sku_count
+                        # sku.save()
 
-                    # 保存商品订单总价和数量
-                    order.total_count += sku_count
-                    order.total_amount += (sku_count * sku.price)
+                        # 使用乐观锁实现多个订单并发处理,更新库存和销量
+                        # 乐观锁就是数据进行前后比较有变化则不执行，无变化则执行
+                        new_stock = origin_stock - sku_count
+                        new_sales = origin_sales + sku_count
+                        result = SKU.objects.filter(id=sku_id, stock=origin_stock).update(stock=new_stock, sales=new_sales)
+                        print(result)
+                        # 如果下单失败，但是库存足够时，继续下单，直到下单成功或者库存不足为止
+                        # result 返回值0和1, 0代表数据已经有改动，则继续执行
+                        if result == 0:  # 如果已经改动则不执行下方代码，跳到循环最前重新执行
+                            continue
+
+                        # spu增加
+                        # (当某一型号手机卖出，那么这一大类数量也会增加)
+                        sku.spu.sales += sku_count
+                        sku.spu.save()
+
+                        # 保存订单商品信息 OrderGoods（多）
+                        OrderGoods.objects.create(
+                            order=order,
+                            sku=sku,
+                            count=sku_count,
+                            price=sku.price,
+                        )
+
+                        # 保存商品订单总价和数量
+                        order.total_count += sku_count
+                        order.total_amount += (sku_count * sku.price)
+                        # 下单成功或者失败就跳出循环
+                        break
 
                 # 添加邮费和保存订单信息
                 order.total_amount += order.freight
