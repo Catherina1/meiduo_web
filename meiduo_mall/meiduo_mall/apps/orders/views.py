@@ -51,6 +51,7 @@ class OrderSettlementView(LoginRequiredMixin, View):
         total_amount = 0
 
         for sku in skus:
+            # 动态语言可以直接给对象添加属性
             sku.count = new_cart_dict[sku.id]
             sku.amount = sku.count * sku.price
             total_count += sku.count
@@ -94,6 +95,7 @@ class OrderCommitView(LoginRequiredJSONMixin, View):
         with transaction.atomic():
             # 创建事务保存点
             save_id = transaction.savepoint()
+            # 暴力回滚
             try:
                 # 3.获取登录用户
                 user = request.user
@@ -150,8 +152,8 @@ class OrderCommitView(LoginRequiredJSONMixin, View):
                         # 乐观锁就是数据进行前后比较有变化则不执行，无变化则执行
                         new_stock = origin_stock - sku_count
                         new_sales = origin_sales + sku_count
+                        # 如果不是原始数据，不一样，则返回0
                         result = SKU.objects.filter(id=sku_id, stock=origin_stock).update(stock=new_stock, sales=new_sales)
-                        print(result)
                         # 如果下单失败，但是库存足够时，继续下单，直到下单成功或者库存不足为止
                         # result 返回值0和1, 0代表数据已经有改动，则继续执行
                         if result == 0:  # 如果已经改动则不执行下方代码，跳到循环最前重新执行
