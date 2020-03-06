@@ -282,3 +282,20 @@ HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 
 # 设置每页显示数量
 HAYSTACK_SEARCH_RESULTS_PER_PAGE = 5
+
+# 支付宝相关数据
+# 支付宝 记得自己用自己的账号登录账号就可以
+ALIPAY_APPID = '2016101900723800'
+ALIPAY_DEBUG = True
+ALIPAY_URL = 'https://openapi.alipaydev.com/gateway.do'
+ALIPAY_RETURN_URL = 'http://www.meiduo.site:8000/payment/status/'
+# 沙箱买家付款方账号
+# 买家账号aymvjp2465@sandbox.com
+# 登录密码111111
+# 支付密码111111
+# 用户名称沙箱环境
+
+# 卖家商家账号
+# 商家账号clogfd6779@sandbox.com
+# 商户UID2088102180292188
+# 登录密码111111
