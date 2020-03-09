@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'goods',
     'carts',
     'orders',
+    'payment',
 ]
 
 MIDDLEWARE = [
@@ -288,6 +289,7 @@ HAYSTACK_SEARCH_RESULTS_PER_PAGE = 5
 ALIPAY_APPID = '2016101900723800'
 ALIPAY_DEBUG = True
 ALIPAY_URL = 'https://openapi.alipaydev.com/gateway.do'
+# 支付后的回调地址
 ALIPAY_RETURN_URL = 'http://www.meiduo.site:8000/payment/status/'
 # 沙箱买家付款方账号
 # 买家账号aymvjp2465@sandbox.com

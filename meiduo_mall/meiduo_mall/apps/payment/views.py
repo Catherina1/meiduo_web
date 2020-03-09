@@ -7,8 +7,8 @@ from django.views import View
 from meiduo_mall.utils.views import LoginRequiredJSONMixin
 from orders.models import OrderInfo
 from django import http
-
 from meiduo_mall.utils.response_code import RETCODE
+from payment.models import Payment
 
 
 class PaymentView(LoginRequiredJSONMixin, View):
@@ -53,5 +53,55 @@ class PaymentView(LoginRequiredJSONMixin, View):
         # 电脑网站支付(开发环境)，需要跳转到https://openapi.alipaydev.com/gateway.do? + order_string
         alipay_url = settings.ALIPAY_URL + '?' + order_string
         return http.JsonResponse({'code': RETCODE.OK, 'errmsg': 'OK', 'alipay_url': alipay_url})
+
+
+class PaymentStatusView(View, LoginRequiredJSONMixin):
+    """保存订单支付状态"""
+
+    def get(self, request):
+        """获取到所有的查询字符"""
+        # 因为支付宝回调过来的有很多字符（文档中可以查询到）
+        query_dict = request.GET
+        # 将字符串转换成标准的字典类型
+        data = query_dict.dict()
+        # 从查询字符串参数中删除 sign , 因为这个不能参与签名验证（因为最后需要拿这个签名做比较）
+        signature = data.pop('sign')
+
+        # 使用SDK对象， 调用验证通知接口函数，得到验证结果
+        # 创建支付宝支付对象
+        alipay = AliPay(
+            appid=settings.ALIPAY_APPID,
+            app_notify_url=None,
+            app_private_key_path=os.path.join(os.path.dirname(os.path.abspath(__file__)), "keys/app_private_key.pem"),
+            alipay_public_key_path=os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                                "keys/alipay_public_key.pem"),
+            sign_type="RSA2",
+            debug=settings.ALIPAY_DEBUG
+        )
+        # 校验这个重定向是否是alipay重定向过来的,这个校验方法返回的布尔值
+        success = alipay.verify(data, signature)
+        if success:
+            # 如果验证通过，对支付宝的支付状态进行处理
+            order_id = data.get('out_trade_no')  # 读取订单号
+            trade_id = data.get('trade_no')  # 读取支付宝订单流水号
+            # 保存payment的订单数据
+            Payment.objects.create(
+                order_id=order_id,
+                trade_id=trade_id
+            )
+            # 修改订单状态为待评价
+            OrderInfo.objects.filter(order_id=order_id, status=OrderInfo.ORDER_STATUS_ENUM['UNPAID']).update(
+                status=OrderInfo.ORDER_STATUS_ENUM["UNCOMMENT"])
+            # 响应trade_id
+            context = {
+                'trade_id': trade_id
+            }
+            return render(request, 'pay_success.html', context)
+        else:
+            # 订单支付失败，重定向到我的订单
+            return http.HttpResponseForbidden('非法请求')
+
+
+
 
 
