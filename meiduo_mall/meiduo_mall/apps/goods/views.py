@@ -5,10 +5,31 @@ from django.shortcuts import render
 from django.utils import timezone
 from django.views import View
 from meiduo_mall.utils.response_code import RETCODE
+
+from orders.models import OrderGoods
 from .utils import get_breadcrumb
 from .models import GoodsCategory, SKU, GoodsVisitCount
 from contents.utils import get_categories
 # Create your views here.
+
+
+# 展示商品评价
+class GoodsCommentView(View):
+    """展示商品评价"""
+    def get(self, request, sku_id):
+        """商品评价"""
+        # 获取被评价的订单商品信息
+        order_goods_list = OrderGoods.objects.filter(sku_id=sku_id, is_commented=True).order_by('-create_time')[:30]
+        # 序列化
+        comment_list = []
+        for order_goods in order_goods_list:
+            username = order_goods.order.user.username
+            comment_list.append({
+                'username': username[0] + '***' + username[-1] if order_goods.is_anonymous else username,
+                'comment': order_goods.comment,
+                'score': order_goods.score,
+            })
+        return http.JsonResponse({'code': RETCODE.OK, 'errmsg': 'OK', 'comment_list': comment_list})
 
 
 # 统计分类商品访问量

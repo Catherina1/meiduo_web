@@ -36,7 +36,7 @@ let vm = new Vue({
 		// 获取简单购物车数据
         this.get_carts();
 		// 获取商品评价信息
-        //this.get_goods_comment();
+        this.get_goods_comment();
     },
     watch: {
         // 监听商品数量的变化

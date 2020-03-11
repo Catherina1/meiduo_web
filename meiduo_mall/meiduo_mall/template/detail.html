@@ -112,7 +112,7 @@
 			<p>{{ sku.caption }}</p>
 			<div class="price_bar">
 				<span class="show_pirce">¥<em>{{ sku.price }}</em></span>
-				<a href="javascript:;" class="goods_judge">18人评价</a>
+				<a href="javascript:;" class="goods_judge">[[ comments.length ]]人评价</a>
 			</div>
 			<div class="goods_num clearfix">
 				<div class="num_name fl">数 量：</div>
@@ -156,11 +156,11 @@
 			</div>
 		</div>
 		<div class="r_wrap fr clearfix">
-			<ul class="detail_tab clearfix">
+			<ul class="detail_tab clearfix" v-cloak>
 				<li @click="on_tab_content('detail')" :class="tab_content.detail?'active':''">商品详情</li>
 				<li @click="on_tab_content('pack')" :class="tab_content.pack?'active':''">规格与包装</li>
 				<li @click="on_tab_content('service')" :class="tab_content.service?'active':''">售后服务</li>
-                <li @click="on_tab_content('comment')" :class="tab_content.comment?'active':''">商品评价(18)</li>
+                <li @click="on_tab_content('comment')" :class="tab_content.comment?'active':''" v-cloak>商品评价[[ comments.length ]]</li>
 			</ul>
 			<div @click="on_tab_content('detail')" class="tab_content" :class="tab_content.detail?'current':''">
 				<dl>
@@ -182,14 +182,14 @@
 			</div>
             <div @click="on_tab_content('comment')" class="tab_content" :class="tab_content.comment?'current':''">
 				<ul class="judge_list_con">
-					<li class="judge_list fl">
+					<li v-for="comment in comments" class="judge_list fl">
 						<div class="user_info fl">
 							<img src="{{ static('images/cat.jpg') }}">
-							<b>张***厨</b>
+							 <b>[[ comment.username ]]</b>
 						</div>
 						<div class="judge_info fl">
-							<div class="stars_five"></div>
-							<div class="judge_detail">派送非常快，第二天上午就收到。2天使用初步总结，前一部手机也是华为P9plus.MATE10pro包装原封未拆精致大气。拆开后第一眼就看到宝石蓝的手机，非常惊艳；然后就是配件一应俱全。开机各方面设置，把通讯录、短信等同步好，同品牌手机同步很快。和P9plus一样的后置指纹识别很方便。录制指纹容易，解锁非常快，秒开！屏幕完好，默认分辨率显示效果很好。</div>
+							<div :class="comment.score_class"></div>
+                            <div class="judge_detail">[[ comment.comment ]]</div>
 						</div>
 					</li>			
 				</ul>
@@ -214,6 +214,7 @@
 		let category_id = "{{ sku.category.id }}";
 		let sku_price = "{{ sku.price }}";
         let sku_id = "{{ sku.id }}";
+        let comments = "{{ comment_list|safe }}"
     </script>
 	<script type="text/javascript" src="{{ static('js/common.js') }}"></script>
 	<script type="text/javascript" src="{{ static('js/detail.js') }}"></script>
