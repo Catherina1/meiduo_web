@@ -76,7 +76,7 @@
                     {% for sku in order.sku_list %}
                     <ul class="order_goods_list clearfix">
                         <li class="col01"><img src="{{ sku.default_image.url }}"></li>
-                        <li class="col02"><span>{{ sku.name }}</span><em>{{ sku.price }}元</em></li>
+                        <li class="col02"><a href="{{ url('goods:detail', args=(sku.id,)) }}"><span>{{ sku.name }}</span></a><em>{{ sku.price }}元</em></li>
                         <li class="col03">{{ sku.count }}</li>
                         <li class="col04">{{ sku.amount }}元</li>
                     </ul>
