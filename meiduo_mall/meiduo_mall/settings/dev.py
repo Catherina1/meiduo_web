@@ -35,6 +35,7 @@ ALLOWED_HOSTS = ['127.0.0.1', 'www.meiduo.site']
 # Application definition
 
 INSTALLED_APPS = [
+    'django_crontab',  # 定时任务
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -301,3 +302,15 @@ ALIPAY_RETURN_URL = 'http://www.meiduo.site:8000/payment/status/'
 # 商家账号clogfd6779@sandbox.com
 # 商户UID2088102180292188
 # 登录密码111111
+
+# 定时器配置
+CRONJOBS = [
+    # 每1分钟生成一次首页静态文件
+    ('*/1 * * * *', 'contents.cron.generate_static_index_html')
+]
+
+# 指定中文编码格式
+CRONTAB_COMMAND_PREFIX = 'LANG_ALL=zh_cn.UTF-8'
+
+# MySQL读写分离路由
+# DATABASE_ROUTERS = ['meiduo_mall.utils.db_router.MasterSlaveDBRouter']
