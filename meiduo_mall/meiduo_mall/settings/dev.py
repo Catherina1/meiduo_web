@@ -97,7 +97,7 @@ DATABASES = {
     #     'ENGINE': 'django.db.backends.sqlite3',
     #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     # }
-    'default': {
+    'default': {  # 写（主机）
         'ENGINE': 'django.db.backends.mysql',  # 数据库引擎
         'HOST': '127.0.0.1',  # 数据库主机
         'PORT': 3306,  # 数据库端口
@@ -105,8 +105,17 @@ DATABASES = {
         'PASSWORD': 'chenqx',  # 数据库用户密码
         'NAME': 'meiduo'  # 数据库名字
     },
+    'slave': {  # 读（从机）
+        'ENGINE': 'django.db.backends.mysql',  # 数据库引擎
+        'HOST': '127.0.0.1',  # 数据库主机
+        'PORT': 8306,  # 数据库端口
+        'USER': 'root',  # 数据库用户名
+        'PASSWORD': 'mysql',  # 数据库用户密码
+        'NAME': 'meiduo'  # 数据库名字
+    },
 }
-
+# 配置数据库读写路由
+DATABASE_ROUTERS = ['meiduo_mall.utils.db_router.MasterSlaveDBRouter']
 
 # C:\Users\msi-\Envs\meiduo_web_space\Lib\site-packages\django\conf\global_settings.py
 # 因为django自带用户认证系统，可以从上面路径中找到505行代码AUTH_USER_MODEL = 'auth.User'
